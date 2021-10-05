@@ -67,7 +67,7 @@ Table of Contents
    and minimizing correlation through the use of Zero-Knowledge Proofs
    (ZKPs), instead of traditional signatures.
 
-   There are a growing number of these cryptographic primitives which
+   There are a growing number of these cryptographic primitives that
    support selective disclosure while protecting privacy across multiple
    presentations.  Examples that have already been or are being deployed
    in the context of Verifiable Credentials are:
