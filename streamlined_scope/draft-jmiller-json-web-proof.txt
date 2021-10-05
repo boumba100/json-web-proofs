@@ -116,10 +116,11 @@ Table of Contents
    importantly adds a prove processing step for interaction with the
    algorithm to perform the selective disclosure and privacy preserving
    transformations.  This allows for multi-party interactions where a
-   credential is issued from one party, derived by the prooving party,
-   then presented to another verifying party.  While sign only occurs
-   once to create a JWP, the prove and verify steps may be safely
-   repeated when supported by the algorithm.
+   credential is issued from one party, held by another party, then used
+   to generate and present proofs about the credential to another
+   verifying party.  While sign only occurs when a JWP is being created,
+   the prove and verify steps may be safely repeated on a signed JWP
+   (when supported by the algorithm).
 
    The intent of JSON Web Proofs is to establish a common container
    format for multiple payloads that can be integrity-verified against a
