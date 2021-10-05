@@ -1203,7 +1203,7 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
         <h3 id="name-payloads">
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-payloads" class="section-name selfRef">Payloads</a>
         </h3>
-<p id="section-4.2-1">Payloads are always represented as an ordered array.  The mapping of which value is in which payload slot is out of scope of this specification.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-1">Payloads are always represented and processed as individual octet strings and arranged in an ordered array when there are multiple.  All application context of the placement and encoding of each payload value is out of scope of this specification and should be well defined and documented by the application or other specifications.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.2-2">In order to support ZKPs, individual payloads cannot be serialized before they are passed into an algorithm implementation.  This enables the algorithms to accept and internally encode elliptic curve points, blinded values, plain numbers, membership keys, etc.  Implementations are therefore required to provide optional arguments for each payload such that the application can utilize these capabilities as needed.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
 <p id="section-4.2-3">When selective disclosure preferences are applied, any one or more payloads may be hidden.  The position of other payloads does not change due to any preceeding ones being hidden - the resulting array will simply be sparse without the hidden payloads.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
 </section>
