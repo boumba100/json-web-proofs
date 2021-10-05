@@ -5,7 +5,7 @@
 todo                                                           J. Miller
                                                                 D. Waite
                                                            Ping Identity
-                                                       20 September 2021
+                                                          5 October 2021
 
 
                              JSON Web Proof
@@ -78,6 +78,9 @@ Table of Contents
 
    *  BBS+ (https://github.com/mattrglobal/bbs-signatures)
 
+   *  MerkleDisclosureProof2021 (https://github.com/transmute-
+      industries/merkle-disclosure-proof-2021)
+
    *  Mercural Signatures (https://eprint.iacr.org/2020/979)
 
    *  PS Signatures (https://eprint.iacr.org/2015/525.pdf)
@@ -109,13 +112,13 @@ Table of Contents
    a singular one.  New JWP-supporting algorithms are then able to
    separate and act on the individual payloads contained within.
 
-   In addition to the JWS "sign" and "verify" interactions, JWP also
-   importantly adds a "prove" processing step for interaction with the
+   In addition to the JWS sign and verify interactions, JWP also
+   importantly adds a prove processing step for interaction with the
    algorithm to perform the selective disclosure and privacy preserving
    transformations.  This allows for multi-party interactions where a
    credential is issued from one party, derived by the prooving party,
-   then presented to another verifying party.  While "sign" only occurs
-   once to create a JWP, the "prove" and "verify" steps may be safely
+   then presented to another verifying party.  While sign only occurs
+   once to create a JWP, the prove and verify steps may be safely
    repeated when supported by the algorithm.
 
    The intent of JSON Web Proofs is to establish a common container
@@ -151,7 +154,7 @@ Table of Contents
    prevent a verifier from categorizing based on header changes that may
    varry between multiple JWPs.
 
-   The JWP protected header MUST have at minimum an "alg" that supports
+   The JWP protected header MUST have at minimum an alg that supports
    proofs with signing, prooving, and verifying processing steps.
 
    For example:
@@ -192,11 +195,11 @@ Table of Contents
    required internal structures to it.
 
    Implementations will also be required to provide optional arguments
-   for each payload as input into the "prove" step.  These arguments can
+   for each payload as input into the prove step.  These arguments can
    be used for generating predicate proofs, linking options, etc.
 
    Algorithms SHOULD generate a new un-correlatable proof value during
-   the "prove" step.  A JWP may also be single-use, where correlation
+   the prove step.  A JWP may also be single-use, where correlation
    across multiple derivations is not a factor.
 
 5.  Serializations
@@ -210,26 +213,26 @@ Table of Contents
 
 5.1.  Compact Serialization
 
-   The individually encoded payloads are concatenated with the "~"
+   The individually encoded payloads are concatenated with the ~
    character to form an ordered delimited array.  Any hidden payloads
-   during a derivation are simply left blank, resulting in sequential
-   "~~" characters such that all payload positions are preserved.
+   during a derivation are simply left blank, resulting in sequential ~~
+   characters such that all payload positions are preserved.
 
-   The header, payloads, and proof are then concatenated with a "."
+   The header, payloads, and proof are then concatenated with a .
    character to form the final compact serialization.
 
    Example compact serialization:
 
-   "eyJhbGciOiJCQlMtQkxTMTIifQ.eyJnaXZlbl9uYW1lIjoiSmFuZSIsImZhbWlseV9uY
-   W1lIjoiRG9lIn0~eyJlbWFpbCI6ImphbmVkb2VAZXhhbXBsZS5jb20ifQ~eyJiaXJ0aGR
-   hdGUiOiIwMDAwLTAzLTIyIn0.F9uMuJzNBqj4j-
+   eyJhbGciOiJCQlMtQkxTMTIifQ.eyJnaXZlbl9uYW1lIjoiSmFuZSIsImZhbWlseV9uYW
+   1lIjoiRG9lIn0~eyJlbWFpbCI6ImphbmVkb2VAZXhhbXBsZS5jb20ifQ~eyJiaXJ0aGRh
+   dGUiOiIwMDAwLTAzLTIyIn0.F9uMuJzNBqj4j-
    HPTvWjUN_MNoe6KRH0818WkvDn2Sf7kg1P17YpNyzSB-CH57AWDFunU13tL8oTBDpBhOD
-   ckelTxHIaEfG0rNmqmjK6DOs0_ObksTZh7W3OTbqfD2h4C_wqqMQHSWdXXnojwyFDEg"
+   ckelTxHIaEfG0rNmqmjK6DOs0_ObksTZh7W3OTbqfD2h4C_wqqMQHSWdXXnojwyFDEg
 
 5.2.  JSON Serialization
 
-   Hidden payloads in the JSON serialization are represented with a
-   "null" value.
+   Hidden payloads in the JSON serialization are represented with a null
+   value.
 
    Example flattened JSON serialization:
 
