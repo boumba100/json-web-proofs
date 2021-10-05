@@ -191,10 +191,13 @@ Table of Contents
    for each payload such that the application can utilize these
    capabilities as needed.
 
-   When selective disclosure preferences are applied, any one or more
-   payloads may be hidden.  The position of other payloads does not
-   change due to any preceeding ones being hidden - the resulting array
-   will simply be sparse without the hidden payloads.
+   Any one or more payloads may be non-disclosed in a JWP.  When a
+   payload is not disclosed the position of other payloads does not
+   change - the resulting array will simply be sparse and only contain
+   the disclosed payloads.  The disclosed payloads will always be in
+   same array positions in order to preserve any index-based references
+   by the application across the whole JWP lifecycle.  How the sparse
+   array is represented is specific to the serialization used.
 
 4.3.  Proof
 
@@ -223,9 +226,9 @@ Table of Contents
 5.1.  Compact Serialization
 
    The individually encoded payloads are concatenated with the ~
-   character to form an ordered delimited array.  Any hidden payloads
-   during a derivation are simply left blank, resulting in sequential ~~
-   characters such that all payload positions are preserved.
+   character to form an ordered delimited array.  Any non-disclosed
+   payloads are simply left blank, resulting in sequential ~~ characters
+   such that all payload positions are preserved.
 
    The header, payloads, and proof are then concatenated with a .
    character to form the final compact serialization.
@@ -240,8 +243,8 @@ Table of Contents
 
 5.2.  JSON Serialization
 
-   Hidden payloads in the JSON serialization are represented with a null
-   value.
+   Non-disclosed payloads in the JSON serialization are represented with
+   a null value.
 
    Example flattened JSON serialization:
 
@@ -260,6 +263,8 @@ Table of Contents
    *  Requirements for supporting algorithms
 
    *  Application interface for verification
+
+   *  Data minimization of the protected header
 
 7.  IANA Considerations
 
