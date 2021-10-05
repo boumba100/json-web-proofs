@@ -156,7 +156,7 @@ Table of Contents
    varry between multiple JWPs.
 
    The JWP protected header MUST have at minimum an alg that supports
-   proofs with signing, prooving, and verifying processing steps.
+   proofs with signing, proving, and verifying processing steps.
 
    For example:
 
