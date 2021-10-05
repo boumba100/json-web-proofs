@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-03T00:42:39.408838+00:00",
+  "timestamp": "2021-10-05T00:38:55.117247+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -443,7 +443,7 @@
       "labels": [],
       "body": "There are two significant things to note in this PR:\r\n1. Renaming of the `derive` step and \"derivation\" to the `prove` step and generating proofs, to be more consistent with the usage of \"proofs\" elsewhere in the draft.\r\n2. Removing all language regarding the mapping of what values are in which payload slot, leaving this to the application or a companion spec.\r\n\r\nThe result is a simpler spec that focuses strictly on the cryptographic container with pluggable proof algorithms. ",
       "createdAt": "2021-09-20T16:09:23Z",
-      "updatedAt": "2021-10-01T21:28:57Z",
+      "updatedAt": "2021-10-04T15:23:35Z",
       "baseRepository": "json-web-proofs/json-web-proofs",
       "baseRefName": "main",
       "baseRefOid": "1f8cf966c342cc0f71b484dcce6bc52d5a11cee0",
@@ -929,6 +929,66 @@
           "createdAt": "2021-10-01T21:28:57Z",
           "updatedAt": "2021-10-01T21:28:57Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t6-sn",
+          "commit": {
+            "abbreviatedOid": "d1f3633"
+          },
+          "author": "OR13",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-04T15:16:03Z",
+          "updatedAt": "2021-10-04T15:16:04Z",
+          "comments": [
+            {
+              "originalPosition": 138,
+              "body": "https://github.com/decentralized-identity/sidetree/blob/3184bfabd4b01e22c9d56fb16feadb5b303da9c4/lib/core/versions/1.0/Multihash.ts#L208\r\n\r\n```\r\n// Compare the strings instead of buffers, \r\n// because encoding schemes such as base64URL \r\n// can allow two distinct strings to decode into the same buffer.\r\n// e.g. 'EiAJID5-y7rbEs7I3PPiMtwVf28LTkPFD4BWIZPCtb6AMg' and\r\n//      'EiAJID5-y7rbEs7I3PPiMtwVf28LTkPFD4BWIZPCtb6AMv' would decode into the same buffer.\r\n```",
+              "createdAt": "2021-10-04T15:16:03Z",
+              "updatedAt": "2021-10-04T15:16:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t6_Wm",
+          "commit": {
+            "abbreviatedOid": "d1f3633"
+          },
+          "author": "OR13",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-04T15:18:08Z",
+          "updatedAt": "2021-10-04T15:18:09Z",
+          "comments": [
+            {
+              "originalPosition": 133,
+              "body": "is there a link to JSDT?",
+              "createdAt": "2021-10-04T15:18:09Z",
+              "updatedAt": "2021-10-04T15:18:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t7BBW",
+          "commit": {
+            "abbreviatedOid": "d1f3633"
+          },
+          "author": "OR13",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-04T15:23:35Z",
+          "updatedAt": "2021-10-04T15:23:35Z",
+          "comments": [
+            {
+              "originalPosition": 59,
+              "body": "I am in favor of:\r\n\r\n```\r\ntype PayloadOptions = Buffer;\r\ntype Payload = base64url (Buffer). base64url (PayloadOptions).\r\ntype Payloads = Array<Payload>;\r\n```\r\n\r\nimplementers shouldn't have to care about the payload content, the alg registry should tell you how to care about options or payloads.",
+              "createdAt": "2021-10-04T15:23:35Z",
+              "updatedAt": "2021-10-04T15:23:35Z"
+            }
+          ]
         }
       ]
     }
