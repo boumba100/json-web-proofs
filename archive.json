@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-05T00:38:55.117247+00:00",
+  "timestamp": "2021-10-07T00:40:36.486953+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -251,9 +251,17 @@
       "labels": [],
       "body": "As with JWS's signature value, the format of the proof value is opaque to the application.  The proof algorithm defines the format and any encoding is unique to that algorithm.\r\n\r\nOf note, for proof algorithms that support proofs of knowledge or predicate proofs of the values in individual payload slots, each of those proofs uniquely generated during derivation must also be encoded/stored in the overall proof value.\r\n\r\nThese proof algorithms must also provide a programmable interface to applications such that they can request the generation and validation of a proof for each payload.  These interfaces will be unique to the algorithm and its proofing capabilities and may vary significantly from one algorithm to another depending on the underlying cryptographic primitives.\r\n\r\nSince some proof algorithms will require the predicate statement during derivation, applications must take care to limit or require consent on multiple derivations such that a hostile party cannot simply continue to refine the predicate request in order to gain more knowledge of the hidden value.\r\n\r\nThe format of any predicate requests are inherently algorithm and application/protocol context specific, these formats are out of scope of the JWP specification.",
       "createdAt": "2021-09-01T21:47:33Z",
-      "updatedAt": "2021-09-01T21:50:52Z",
+      "updatedAt": "2021-10-05T20:03:30Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "See discussion thread here: https://github.com/json-web-proofs/json-web-proofs/pull/10#discussion_r716084233 and https://github.com/json-web-proofs/json-web-proofs/pull/10#discussion_r716086161",
+          "createdAt": "2021-10-05T19:38:29Z",
+          "updatedAt": "2021-10-05T20:03:30Z"
+        }
+      ]
     },
     {
       "number": 9,
@@ -294,14 +302,53 @@
       "url": "https://github.com/json-web-proofs/json-web-proofs/issues/12",
       "state": "OPEN",
       "author": "OR13",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Some proof types have 2 representations, a. \"root\" or \"full disclosure\" format... and a \"derived\" or \"selective disclosure format\"...\r\n\r\nBBS+ is an example.\r\n\r\nWhile it is possible to verify both formats, I wonder if there is some developer / user experience benefit to refusing to verify the \"root\" type... \r\n\r\nThis might help discourage sharing every attribute, since no verifier (that cared deeply about user privacy) would accept the root format... this would cause the holder to explicitly derive a subset (potentially not strict) of attributes every time they wanted to present a proof.\r\n\r\nPerhaps such privacy considerations are not appropriate for this layer of debate, but certainly clever registration of algorithms might help user privacy here....\r\n\r\n\r\nFor example:\r\n\r\n`BbsBlsSignature2020` -> registered but prohibited.\r\n`BbsBlsSignatureProof2020` -> registered and required.\r\n\r\n",
       "createdAt": "2021-09-25T15:54:42Z",
-      "updatedAt": "2021-09-25T15:55:09Z",
+      "updatedAt": "2021-10-05T00:39:03Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This is an excellent privacy consideration, though I would expect it to be in the presentation exchange layer so that it applies unilaterally to both the format and to any selectively disclosable linkable attributes.\r\n\r\nAs per relating to JWPs, the draft needs to have language added such that an algorithm's verification method MUST NOT verify a JWP that has only been signed and not derived/proofed.  That will at least prevent just disclosing the raw issued JWP without having at least run it through the proof generation.",
+          "createdAt": "2021-10-05T00:39:03Z",
+          "updatedAt": "2021-10-05T00:39:03Z"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOFsQObc48mHvc",
+      "title": "Naming Things",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/13",
+      "state": "OPEN",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Using this issue to resolve outstanding naming discussions:\r\n- [ ] derive proof vs. generate proof\r\n- [ ] signing vs. generate proof\r\n- [ ] JSDT (JSON Selective Disclosure Token) vs ??? for companion spec to JWP",
+      "createdAt": "2021-10-05T17:59:46Z",
+      "updatedAt": "2021-10-05T20:01:28Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "My dilemma w/ \"JSDT\" is that it doesn't encompass the unlinkability aspect, which IMO is equally important as a principal foundation for a companion spec.  Selective disclosure is also just one aspect of the data minimization approach.\r\n\r\nPerhaps \"Minimization\" is the root of both aspects? Maybe JMP/JMT or JMDP/JMDT for Minimized or Minimal Disclosure? My inner nerd likes JMP/JMT because it's just the W flipped :) ",
+          "createdAt": "2021-10-05T19:31:32Z",
+          "updatedAt": "2021-10-05T19:31:32Z"
+        },
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "See discussion thread here: https://github.com/json-web-proofs/json-web-proofs/pull/10#discussion_r716082098 and https://github.com/json-web-proofs/json-web-proofs/pull/10#discussion_r716083442",
+          "createdAt": "2021-10-05T19:39:43Z",
+          "updatedAt": "2021-10-05T20:01:28Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -436,24 +483,26 @@
       "id": "PR_kwDOFsQObc4r-MOk",
       "title": "[WIP] Streamlined Scope",
       "url": "https://github.com/json-web-proofs/json-web-proofs/pull/10",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "quartzjer",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "There are two significant things to note in this PR:\r\n1. Renaming of the `derive` step and \"derivation\" to the `prove` step and generating proofs, to be more consistent with the usage of \"proofs\" elsewhere in the draft.\r\n2. Removing all language regarding the mapping of what values are in which payload slot, leaving this to the application or a companion spec.\r\n\r\nThe result is a simpler spec that focuses strictly on the cryptographic container with pluggable proof algorithms. ",
       "createdAt": "2021-09-20T16:09:23Z",
-      "updatedAt": "2021-10-04T15:23:35Z",
+      "updatedAt": "2021-10-05T23:37:20Z",
       "baseRepository": "json-web-proofs/json-web-proofs",
       "baseRefName": "main",
       "baseRefOid": "1f8cf966c342cc0f71b484dcce6bc52d5a11cee0",
       "headRepository": "json-web-proofs/json-web-proofs",
       "headRefName": "streamlined_scope",
-      "headRefOid": "d1f363324174801ab4c090f0c78fa71db0c00063",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "ec5d1761c451e9407e986470b64104661b495a47",
+      "closedAt": "2021-10-05T23:37:16Z",
+      "mergedAt": "2021-10-05T23:37:16Z",
+      "mergedBy": "quartzjer",
+      "mergeCommit": {
+        "oid": "9e9b7f8681e2257354a93e8b043dc16a37eb607a"
+      },
       "comments": [
         {
           "author": "quartzjer",
@@ -461,6 +510,20 @@
           "body": "Thank you @OR13, this is some excellent feedback! \r\n\r\nI've got some work to do incorporating it, which might take me a week or so since I'll be out most of this coming week.",
           "createdAt": "2021-09-25T19:46:18Z",
           "updatedAt": "2021-09-25T19:46:18Z"
+        },
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@OR13 I think I've either made some improvements or filed/linked issues for all the feedback and points you raised, if I missed any I'm happy to keep refining too.",
+          "createdAt": "2021-10-05T19:58:42Z",
+          "updatedAt": "2021-10-05T19:58:42Z"
+        },
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks all for the feedback! ",
+          "createdAt": "2021-10-05T23:37:10Z",
+          "updatedAt": "2021-10-05T23:37:10Z"
         }
       ],
       "reviews": [
@@ -470,7 +533,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T18:30:49Z",
@@ -490,7 +553,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T18:31:46Z",
@@ -510,7 +573,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T18:35:17Z",
@@ -530,7 +593,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T18:43:14Z",
@@ -550,7 +613,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T18:44:44Z",
@@ -570,7 +633,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T18:50:41Z",
@@ -590,7 +653,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T18:55:19Z",
@@ -610,7 +673,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T18:57:48Z",
@@ -630,7 +693,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T19:04:01Z",
@@ -650,7 +713,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T19:09:14Z",
@@ -670,7 +733,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T19:11:21Z",
@@ -690,7 +753,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T19:12:48Z",
@@ -710,7 +773,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-09-25T19:15:50Z",
@@ -730,7 +793,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "This PR is awesome, I left some comments, none of my comments are blocking as this is DIF not W3C or IETF.\r\n\r\n",
           "createdAt": "2021-09-25T19:18:49Z",
@@ -936,7 +999,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-10-04T15:16:03Z",
@@ -956,7 +1019,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-10-04T15:18:08Z",
@@ -976,7 +1039,7 @@
             "abbreviatedOid": "d1f3633"
           },
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-10-04T15:23:35Z",
@@ -989,6 +1052,339 @@
               "updatedAt": "2021-10-04T15:23:35Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t8svH",
+          "commit": {
+            "abbreviatedOid": "d1f3633"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T00:52:09Z",
+          "updatedAt": "2021-10-05T00:52:09Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Regardless of the cryptographic primitive used by the _issuer_, they are still performing the act of signing, the issuer is adding authentication (that they signed it) and integrity.  The holder upon receiving a _signed_ JWP then validates the signature to make sure it is authentic and has integrity.\r\n\r\nWhen interacting with a verifier, the holder derives a proof of authenticity and integrity of the header and disclosed payloads.  The cryptographic primitive is predominately ZKPs, but the act is still proving since the holder isn't the original signer.\r\n\r\nThat's the way I've grown to think about it across all of the papers and code I've read in this space.  I think \"proof generation\" is more appropriate, as it is always an act of creation of a new output that is used to prove. Derivation could have other interpretations/meanings or create the wrong expectations.\r\n",
+              "createdAt": "2021-10-05T00:52:09Z",
+              "updatedAt": "2021-10-05T00:52:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t8ux_",
+          "commit": {
+            "abbreviatedOid": "5bb8ad6"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T01:10:30Z",
+          "updatedAt": "2021-10-05T01:10:30Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "I mentioned in another comment my thought process behind sign/sign_verify and proove/proof_verify language, happy to pick that up in that thread or we can create an issue to continue also.\r\n\r\nGood point about the \"only once\" language, fixing that now :+1: ",
+              "createdAt": "2021-10-05T01:10:30Z",
+              "updatedAt": "2021-10-05T01:16:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t8wve",
+          "commit": {
+            "abbreviatedOid": "5d1a886"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T01:32:03Z",
+          "updatedAt": "2021-10-05T01:32:04Z",
+          "comments": [
+            {
+              "originalPosition": 59,
+              "body": "This is an unfortunate complexity I think we'll have to work through and deal with in some form.\r\n\r\nThe JWP _algorithm interface_ simply *must* support rich types.  JWP itself as a container format absolutely treats each payload as an array of bytes, but during the act of signing, proof generation, and proof validation the algorithm has to have the ability to accept rich types.\r\n\r\nThese rich interfaces are language/library level and not part of the protocol, but they are important to support required capabilities such as blinded values (algo has to be given an elliptic curve point), predicate proofs (algo requires a number, set member value, etc).\r\n\r\nThere's no reason to make these encodings be part of the protocol, they really are an implementation language level detail and algorithm specific.  There's not even an interop issue that I can tell since the algorithms that support these have very specific ways they use them via a hash2curve or other such cryptographic transformation.\r\n\r\nI definitely need help explaining this and adding better text around it, so I welcome the discussions :) ",
+              "createdAt": "2021-10-05T01:32:03Z",
+              "updatedAt": "2021-10-05T01:32:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t8xBg",
+          "commit": {
+            "abbreviatedOid": "5d1a886"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T01:35:22Z",
+          "updatedAt": "2021-10-05T01:35:23Z",
+          "comments": [
+            {
+              "originalPosition": 82,
+              "body": "I believe we'll be forming a sibling JWP spec that adds semantics around specific claims like JWT. Presentation exchange is also a good place for these types of rules.\r\n\r\nI don't think these payload-specific requirements need to be handled at the core JWP layer other than integrity protecting and disclosing the fixed header. ",
+              "createdAt": "2021-10-05T01:35:23Z",
+              "updatedAt": "2021-10-05T01:35:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t8xWI",
+          "commit": {
+            "abbreviatedOid": "5d1a886"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T01:39:13Z",
+          "updatedAt": "2021-10-05T01:39:13Z",
+          "comments": [
+            {
+              "originalPosition": 93,
+              "body": "Excellent point @OR13, this definitely needs some language around that, with probably more detail in a security considerations.\r\n\r\nThe protected header SHOULD be minimal and static across all usages of a given key, and static as in simply re-using the digested version.  It's only real purpose is to contain signals of how to process the JWP, key id, etc.",
+              "createdAt": "2021-10-05T01:39:13Z",
+              "updatedAt": "2021-10-05T01:39:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4t_xPH",
+          "commit": {
+            "abbreviatedOid": "f18fce7"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T16:39:26Z",
+          "updatedAt": "2021-10-05T16:39:26Z",
+          "comments": [
+            {
+              "originalPosition": 98,
+              "body": "Agree that the payload contents should be addressed in a companion spec, and I also agree this wording is definitely incomplete and needs more work.",
+              "createdAt": "2021-10-05T16:39:26Z",
+              "updatedAt": "2021-10-05T16:39:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uAB6y",
+          "commit": {
+            "abbreviatedOid": "f18fce7"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T17:48:02Z",
+          "updatedAt": "2021-10-05T17:48:03Z",
+          "comments": [
+            {
+              "originalPosition": 117,
+              "body": "I'm going to close this sub-thread since it's the same discussion on the payload encodings above.",
+              "createdAt": "2021-10-05T17:48:02Z",
+              "updatedAt": "2021-10-05T17:48:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uACoI",
+          "commit": {
+            "abbreviatedOid": "f18fce7"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T17:50:24Z",
+          "updatedAt": "2021-10-05T17:50:25Z",
+          "comments": [
+            {
+              "originalPosition": 133,
+              "body": "It is possible when the header digest is static and applies to all JWPs an issuer generates.",
+              "createdAt": "2021-10-05T17:50:24Z",
+              "updatedAt": "2021-10-05T17:50:25Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uAFfS",
+          "commit": {
+            "abbreviatedOid": "f18fce7"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T17:55:21Z",
+          "updatedAt": "2021-10-05T17:55:21Z",
+          "comments": [
+            {
+              "originalPosition": 138,
+              "body": "Given that we plan on defining a COSE Proof analog to JWP, my preference is to keep JWP as close to JOSE conventions as possible for easier adoption in those existing environments.\r\n\r\nCOSE Proofs can serve as the basis for much more efficient representations that can be serialized/encoded independently by a constrained transport as needed.",
+              "createdAt": "2021-10-05T17:55:21Z",
+              "updatedAt": "2021-10-05T17:55:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uAGZk",
+          "commit": {
+            "abbreviatedOid": "7d98b98"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T17:56:53Z",
+          "updatedAt": "2021-10-05T17:56:53Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "Corrected.",
+              "createdAt": "2021-10-05T17:56:53Z",
+              "updatedAt": "2021-10-05T17:56:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uAlO0",
+          "commit": {
+            "abbreviatedOid": "7d98b98"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T19:33:23Z",
+          "updatedAt": "2021-10-05T19:33:23Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "I created issue #13 to continue this thread.",
+              "createdAt": "2021-10-05T19:33:23Z",
+              "updatedAt": "2021-10-05T19:33:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uAl70",
+          "commit": {
+            "abbreviatedOid": "7d98b98"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T19:36:36Z",
+          "updatedAt": "2021-10-05T19:36:36Z",
+          "comments": [
+            {
+              "originalPosition": 46,
+              "body": "\ud83d\udcaf agreed!",
+              "createdAt": "2021-10-05T19:36:36Z",
+              "updatedAt": "2021-10-05T19:36:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uAmGy",
+          "commit": {
+            "abbreviatedOid": "7d98b98"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T19:37:21Z",
+          "updatedAt": "2021-10-05T19:37:21Z",
+          "comments": [
+            {
+              "originalPosition": 59,
+              "body": "Let's continue this in issue #8 ",
+              "createdAt": "2021-10-05T19:37:21Z",
+              "updatedAt": "2021-10-05T19:37:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uAqVv",
+          "commit": {
+            "abbreviatedOid": "387de07"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T19:57:08Z",
+          "updatedAt": "2021-10-05T19:57:09Z",
+          "comments": [
+            {
+              "originalPosition": 98,
+              "body": "Related to issue #8, I also made some minor improvements to this text to be more clear.",
+              "createdAt": "2021-10-05T19:57:09Z",
+              "updatedAt": "2021-10-05T19:57:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uAuAv",
+          "commit": {
+            "abbreviatedOid": "ec5d176"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T20:14:35Z",
+          "updatedAt": "2021-10-05T20:14:35Z",
+          "comments": [
+            {
+              "originalPosition": 119,
+              "body": "Pushed some improvements here that hopefully clarify also.",
+              "createdAt": "2021-10-05T20:14:35Z",
+              "updatedAt": "2021-10-05T20:14:35Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uA4kR",
+          "commit": {
+            "abbreviatedOid": "ec5d176"
+          },
+          "author": "OR13",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-10-05T21:04:50Z",
+          "updatedAt": "2021-10-05T21:04:50Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "like this change.",
+              "createdAt": "2021-10-05T21:04:50Z",
+              "updatedAt": "2021-10-05T21:04:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4uA_w4",
+          "commit": {
+            "abbreviatedOid": "ec5d176"
+          },
+          "author": "OR13",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-10-05T21:43:35Z",
+          "updatedAt": "2021-10-05T21:43:35Z",
+          "comments": []
         }
       ]
     }
