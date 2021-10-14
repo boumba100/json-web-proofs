@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-07T00:40:36.486953+00:00",
+  "timestamp": "2021-10-14T00:37:25.141009+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -1384,6 +1384,48 @@
           "body": "",
           "createdAt": "2021-10-05T21:43:35Z",
           "updatedAt": "2021-10-05T21:43:35Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "id": "PR_kwDOFsQObc4tGAnC",
+      "title": "[WIP] draft of a JSON Proof Algorithms spec",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/pull/14",
+      "state": "MERGED",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The goal is to outline the requirements and options for proof algorithms, and then start to define mappings to the existing known ones within that framework.",
+      "createdAt": "2021-10-12T19:41:54Z",
+      "updatedAt": "2021-10-12T20:14:13Z",
+      "baseRepository": "json-web-proofs/json-web-proofs",
+      "baseRefName": "main",
+      "baseRefOid": "9e9b7f8681e2257354a93e8b043dc16a37eb607a",
+      "headRepository": "json-web-proofs/json-web-proofs",
+      "headRefName": "jpa-draft",
+      "headRefOid": "22f7a44880f3b0a8185b11bdfec3015b8129591f",
+      "closedAt": "2021-10-12T20:14:13Z",
+      "mergedAt": "2021-10-12T20:14:13Z",
+      "mergedBy": "dwaite",
+      "mergeCommit": {
+        "oid": "e3d02f9b0f21639273c1c9bedfecb41387ddc8e9"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFsQObc4uXDmL",
+          "commit": {
+            "abbreviatedOid": "22f7a44"
+          },
+          "author": "selfissued",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Merge it!  Thanks for moving us from a blank page to something to edit.",
+          "createdAt": "2021-10-12T19:54:30Z",
+          "updatedAt": "2021-10-12T19:54:30Z",
           "comments": []
         }
       ]
