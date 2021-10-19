@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-14T00:37:25.141009+00:00",
+  "timestamp": "2021-10-19T00:40:14.459467+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -347,6 +347,37 @@
           "body": "See discussion thread here: https://github.com/json-web-proofs/json-web-proofs/pull/10#discussion_r716082098 and https://github.com/json-web-proofs/json-web-proofs/pull/10#discussion_r716083442",
           "createdAt": "2021-10-05T19:39:43Z",
           "updatedAt": "2021-10-05T20:01:28Z"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "id": "I_kwDOFsQObc49TK7V",
+      "title": "JWP for Merkle Proofs",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/15",
+      "state": "OPEN",
+      "author": "OR13",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I took a stab at a \u201cJWP\u201d encoding of merkle disclosure proofs in a token format\u2026.\r\n\r\nhttps://or13.github.io/jwp-mdt/#name-root-proof\r\n\r\nThe main thing I noticed was some awkwardness regarding nesting JWS inside the protected header.\r\n\r\nit feels like JWP \u201cProtected Header\u201d should reserve a member \u201csignature\u201d and its value should not contain concatenated \u201cheader\u201d or \u201cpayload\u201d attributes\u2026\r\n\r\n```\r\n \"protected\": {\r\n\r\n    \"kid\": \"did:example:123#key-0\"\r\n\r\n    \"root\": \"SflKxwRJSM...\",\r\n    \"alg\": \"MDP+ES256+JP\", // merkle disclosure with json pointer\r\n    \"zip\": \"DEF\"\r\n\r\n    \"signature\": \"SflKxwRJSM\", // over the entire protected header, like a detached jws, but only the signature part.\r\n  },\r\n\r\n```\r\n\r\nOtherwise if we reserved a member \u201cjws\u201d we would have an encoded JWS header, nested insider an encoded JWP header, each with potentially different alg  zip kid, etc\u2026\r\n\r\n```\r\n \"protected\": {\r\n\r\n    \"kid\": \"did:example:123#key-0\"\r\n\r\n    \"root\": \"SflKxwRJSM...\",\r\n    \"alg\": \"MDP+ES256+JP\", // merkle disclosure with json pointer\r\n    \"zip\": \"DEF\"\r\n\r\n    \"jws\": \"{alg, kid, zip}..SflKxwRJSM\", // over the entire protected header, but confusing imo...\r\n  },\r\n\r\n```\r\n\r\nFor merkle proofs a signature over the root must be disclosed, so we need a \"signature\" in the \"protected header\".\r\n\r\n",
+      "createdAt": "2021-10-17T20:58:06Z",
+      "updatedAt": "2021-10-17T21:10:59Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "OR13",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Another option might be to put the \"signature for the merkle root\"... on the end of the \"proof\" object...\r\n\r\nSo instead of this:\r\n\r\n#### Option 1\r\n\r\n```\r\n{\r\n\r\n  // From JWP \"Protected Header\"\r\n  // always disclosed\r\n  \"protected\": {\r\n\r\n    \"kid\": \"did:example:123#key-0\"\r\n\r\n    \"root\": \"SflKxwRJSM...\",\r\n    \"alg\": \"MDP+ES256+JP\", // merkle disclosure with json pointer\r\n    \"zip\": \"DEF\"\r\n\r\n    \"signature\": \"SflKxwRJSM\", // over the entire protected header.\r\n  },\r\n\r\n  // From JWP \"Payloads\" and \"Proof\"\r\n  // selectively disclosed\r\n  \"payloads\": [ { message }, ...]\r\n  \"proof\": [ { path, nonce }, ... ],\r\n}\r\n```\r\n\r\nWe would have this:\r\n\r\n\r\n#### Option 2\r\n\r\n```\r\n{\r\n\r\n  // From JWP \"Protected Header\"\r\n  // always disclosed\r\n  \"protected\": {\r\n\r\n    \"kid\": \"did:example:123#key-0\"\r\n\r\n    \"root\": \"SflKxwRJSM...\",\r\n    \"alg\": \"MDP+ES256+JP\", // merkle disclosure with json pointer\r\n    \"zip\": \"DEF\"\r\n  },\r\n\r\n  // From JWP \"Payloads\" and \"Proof\"\r\n  // selectively disclosed\r\n  \"payloads\": [ { message }, ...]\r\n\r\n  // first part selectively disclosed, second part required.\r\n  \"proof\": [ { path, nonce}, ... ] + \"SflKxwRJSM\", // signature over the entire protected header.\r\n}\r\n```\r\n\r\nDownside of this would be constantly splitting the signature from the proofs when deriving.... if thats acceptable, we could also do:\r\n\r\n#### Option 3\r\n\r\n```\r\n{\r\n\r\n  // From JWP \"Protected Header\"\r\n  // always disclosed\r\n  \"protected\": {\r\n    \"kid\": \"did:example:123#key-0\",\r\n    \"alg\": \"MDP+ES256+JP\",\r\n    \"zip\": \"DEF\"\r\n  },\r\n\r\n  // From JWP \"Payloads\" and \"Proof\"\r\n\r\n  // selectively disclosed\r\n  \"payloads\": [ { message }, ...]\r\n\r\n  // first part selectively disclosed, second part required.\r\n  \"proof\": [ { path, nonce}, ... ] \" + root + \"SflKxwRJSM\", // signature over the entire protected header.\r\n}\r\n```\r\n",
+          "createdAt": "2021-10-17T21:08:33Z",
+          "updatedAt": "2021-10-17T21:10:58Z"
+        },
+        {
+          "author": "OR13",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I prefer Option 1",
+          "createdAt": "2021-10-17T21:09:56Z",
+          "updatedAt": "2021-10-17T21:09:56Z"
         }
       ]
     }
