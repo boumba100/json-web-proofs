@@ -1,0 +1,313 @@
+
+
+
+
+todo                                                           J. Miller
+                                                                D. Waite
+                                                           Ping Identity
+                                                         21 October 2021
+
+
+                             JSON Web Proof
+                      draft-jmiller-json-web-proof
+
+Abstract
+
+   The JOSE set of standards established JSON-based container formats
+   for Keys (https://datatracker.ietf.org/doc/rfc7517/), Signatures
+   (https://datatracker.ietf.org/doc/rfc7515/), and Encryption
+   (https://datatracker.ietf.org/doc/rfc7516/).  They also established
+   IANA registries (https://www.iana.org/assignments/jose/jose.xhtml) to
+   enable the algorithms and representations used for them to be
+   extended.  Since those were created, newer cryptographic algorithms
+   that support selective disclosure and unlinkability have matured and
+   started seeing early market adoption.
+
+   This document adds to the JOSE family by standardizing a new
+   container format very similar in purpose and design to a JWS, called
+   a _JSON Web Proof (JWP)_.  It adds support for the new algorithms by
+   way of containing multiple individual payloads instead of a singular
+   one as well as an additional proof-generation step to apply the
+   privacy preserving selection and computation.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Conventions and Definitions
+   3.  Background
+   4.  JWP Format
+     4.1.  Protected Header
+     4.2.  Payloads
+     4.3.  Proof
+   5.  Serializations
+     5.1.  Compact Serialization
+     5.2.  JSON Serialization
+   6.  Security Considerations
+   7.  IANA Considerations
+   8.  Normative References
+   9.  Informative References
+   Authors' Addresses
+
+1.  Introduction
+
+   The JOSE specifications are very widely deployed and well supported
+   technology combining security with the accessibility of JSON.  JWTs
+   [RFC7519] are one of the most common encapsulation formats for
+   identity and access claims, which are used with the OpenID Connect
+   standards.  More recently, JOSE and JWTs are being integrated as part
+   of the W3C's Verifiable Credentials work to implement Decentralized
+   Identity use-cases.
+
+   With these new use cases, there is an increased focus on adopting
+   privacy-protecting cryptographic primitives.  While such primitives
+   are still an active area of academic and applied research, the
+   leading candidates introduce new patterns that are not currently
+   supported by JOSE.  These new patterns are largely focused on two
+   areas: supporting selective disclosure when presenting a credential
+   and minimizing correlation through the use of Zero-Knowledge Proofs
+   (ZKPs), instead of traditional signatures.
+
+   There are a growing number of these cryptographic primitives that
+   support selective disclosure while protecting privacy across multiple
+   presentations.  Examples that have already been or are being deployed
+   in the context of Verifiable Credentials are:
+
+   *  CL Signatures (https://eprint.iacr.org/2012/562.pdf)
+
+   *  IDEMIX (http://www.zurich.ibm.com/idemix)
+
+   *  BBS+ (https://github.com/mattrglobal/bbs-signatures)
+
+   *  MerkleDisclosureProof2021 (https://github.com/transmute-
+      industries/merkle-disclosure-proof-2021)
+
+   *  Mercural Signatures (https://eprint.iacr.org/2020/979)
+
+   *  PS Signatures (https://eprint.iacr.org/2015/525.pdf)
+
+   *  U-Prove (https://www.microsoft.com/en-us/research/project/
+      u-prove/)
+
+   *  Spartan (https://github.com/microsoft/Spartan)
+
+   All of these follow the same pattern of taking multiple claims
+   (a.k.a., "attributes" or "messages" in the literature) and binding
+   them together into an issued credential.  These are then later
+   securely one-way transformed into a presentation that reveals
+   potentially only a subset of the original claims, predicate proofs of
+   the claim values, or only proofs of knowledge of the claims.
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Background
+
+   A _JSON Web Proof (JWP)_ is very similar to a JWS [RFC7515], with the
+   addition that it can contain multiple individual payloads instead of
+   a singular one.  New JWP-supporting algorithms are then able to
+   separate and act on the individual payloads contained within.
+
+   In addition to the JWS sign and verify interactions, JWP also
+   importantly adds a prove processing step for interaction with the
+   algorithm to perform the selective disclosure and privacy preserving
+   transformations.  This allows for multi-party interactions where a
+   credential is issued from one party, held by another party, then used
+   to generate and present proofs about the credential to another
+   verifying party.  While sign only occurs when a JWP is being created,
+   the prove and verify steps may be safely repeated on a signed JWP
+   (when supported by the algorithm).
+
+   The intent of JSON Web Proofs is to establish a common container
+   format for multiple payloads that can be integrity-verified against a
+   proof value.  It does not create or specify any cryptographic
+   protocols, interaction protocols, or custom options for algorithms
+   with additional capabilities.
+
+   Algorithm definitions that support JWPs will be done in separate
+   companion specifications - just as the [JSON Web Algorithms]
+   [RFC7518] specification does for JWS and JWE [RFC7516].
+
+4.  JWP Format
+
+   A JWP always contains a protected header along with one or more
+   specific payloads.  The payloads are always serialized and processed
+   as an ordered array.
+
+   An individual payload may contain structured information such as a
+   JSON document or be a simple value such as a number, string, or even
+   a binary image.  Some algorithms may support payload values that are
+   cryptographic values such as elliptic curve points or blinded
+   secrets.
+
+4.1.  Protected Header
+
+   Although there are multiple payloads, the protected header still
+   represents the JWP as a whole.
+
+   It is recommended that payload-specific information is not included
+   in the header and is handled outside of the cryptographic envelope.
+   This is to minimize any correlatable signals in the metadata, to
+   prevent a verifier from categorizing based on header changes that may
+   varry between multiple JWPs.
+
+   The JWP protected header MUST have at minimum an alg that supports
+   proofs with signing, proving, and verifying processing steps.
+
+   For example:
+
+   {
+       "alg":"BBS-BLS12"
+   }
+
+   Every JWP algorithm must include a digest method that is used to
+   generate a hash of the base64url serialized protected header.  The
+   protected header cannot be selectively disclosed and the digest value
+   MUST be included in all proof values.
+
+   In order to minimize linkability, the same protected header SHOULD be
+   static across all JWPs for a given key or issuer.  All re-used
+   headers MUST have the same base64url serialized value to avoid any
+   non-deterministic JSON serialization, and the JWP algorithm's digest
+   method MUST have a deterministic output for identical inputs.
+
+4.2.  Payloads
+
+   Payloads are always represented and processed as individual octet
+   strings and arranged in an ordered array when there are multiple.
+   All application context of the placement and encoding of each payload
+   value is out of scope of this specification and should be well
+   defined and documented by the application or other specifications.
+
+   In order to support ZKPs, individual payloads cannot be serialized
+   before they are passed into an algorithm implementation.  This
+   enables the algorithms to accept and internally encode elliptic curve
+   points, blinded values, plain numbers, membership keys, etc.
+   Implementations are therefore required to provide optional arguments
+   for each payload such that the application can utilize these
+   capabilities as needed.
+
+   Any one or more payloads may be non-disclosed in a JWP.  When a
+   payload is not disclosed the position of other payloads does not
+   change - the resulting array will simply be sparse and only contain
+   the disclosed payloads.  The disclosed payloads will always be in
+   same array positions in order to preserve any index-based references
+   by the application across the whole JWP lifecycle.  How the sparse
+   array is represented is specific to the serialization used.
+
+4.3.  Proof
+
+   The proof value is a binary octet string that is opaque to
+   applications.  Individual proof-supporting algorithms are responsible
+   for the contents and security of the proof value along with any
+   required internal structures to it.
+
+   Implementations will also be required to provide optional arguments
+   for each payload as input into the prove step.  These arguments can
+   be used for generating predicate proofs, linking options, etc.
+
+   Algorithms SHOULD generate a new un-correlatable proof value during
+   the prove step.  A JWP may also be single-use, where correlation
+   across multiple derivations is not a factor.
+
+5.  Serializations
+
+   Each disclosed payload MUST be base64url encoded when preparing it to
+   be serialized.  The header and proof are also individually base64url
+   encoded.
+
+   Like JWS, JWP supports both a Compact Serialization and a JSON
+   Serialization.
+
+5.1.  Compact Serialization
+
+   The individually encoded payloads are concatenated with the ~
+   character to form an ordered delimited array.  Any non-disclosed
+   payloads are simply left blank, resulting in sequential ~~ characters
+   such that all payload positions are preserved.
+
+   The header, payloads, and proof are then concatenated with a .
+   character to form the final compact serialization.
+
+   Example compact serialization:
+
+   eyJhbGciOiJCQlMtQkxTMTIifQ.eyJnaXZlbl9uYW1lIjoiSmFuZSIsImZhbWlseV9uYW
+   1lIjoiRG9lIn0~eyJlbWFpbCI6ImphbmVkb2VAZXhhbXBsZS5jb20ifQ~eyJiaXJ0aGRh
+   dGUiOiIwMDAwLTAzLTIyIn0.F9uMuJzNBqj4j-
+   HPTvWjUN_MNoe6KRH0818WkvDn2Sf7kg1P17YpNyzSB-CH57AWDFunU13tL8oTBDpBhOD
+   ckelTxHIaEfG0rNmqmjK6DOs0_ObksTZh7W3OTbqfD2h4C_wqqMQHSWdXXnojwyFDEg
+
+5.2.  JSON Serialization
+
+   Non-disclosed payloads in the JSON serialization are represented with
+   a null value.
+
+   Example flattened JSON serialization:
+
+   {
+       "protected":"eyJhbGciOiJCQlMtQkxTMTIifQ",
+       "payloads":[
+           "eyJnaXZlbl9uYW1lIjoiSmFuZSIsImZhbWlseV9uYW1lIjoiRG9lIn0",
+           "eyJlbWFpbCI6ImphbmVkb2VAZXhhbXBsZS5jb20ifQ",
+           "eyJiaXJ0aGRhdGUiOiIwMDAwLTAzLTIyIn0"
+       ],
+       "proof":"F9uMuJzNBqj4j-HPTvWjUN_MNoe6KRH0818WkvDn2Sf7kg1P17YpNyzSB-CH57AWDFunU13tL8oTBDpBhODckelTxHIaEfG0rNmqmjK6DOs0_ObksTZh7W3OTbqfD2h4C_wqqMQHSWdXXnojwyFDEg"
+   }
+
+6.  Security Considerations
+
+   *  Requirements for supporting algorithms
+
+   *  Application interface for verification
+
+   *  Data minimization of the protected header
+
+7.  IANA Considerations
+
+   This document has no IANA actions.
+
+8.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC7519]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web Token
+              (JWT)", RFC 7519, DOI 10.17487/RFC7519, May 2015,
+              <https://www.rfc-editor.org/info/rfc7519>.
+
+9.  Informative References
+
+   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
+              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
+              2015, <https://www.rfc-editor.org/info/rfc7515>.
+
+   [RFC7516]  Jones, M. and J. Hildebrand, "JSON Web Encryption (JWE)",
+              RFC 7516, DOI 10.17487/RFC7516, May 2015,
+              <https://www.rfc-editor.org/info/rfc7516>.
+
+   [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
+              DOI 10.17487/RFC7518, May 2015,
+              <https://www.rfc-editor.org/info/rfc7518>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+Authors' Addresses
+
+   Jeremie Miller
+   Ping Identity
+
+   Email: jmiller@pingidentity.com
+
+
+   David Waite
+   Ping Identity
+
+   Email: dwaite+jwp@pingidentity.com
