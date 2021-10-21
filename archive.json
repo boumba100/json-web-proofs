@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-19T00:40:14.459467+00:00",
+  "timestamp": "2021-10-21T00:45:24.406707+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -49,9 +49,19 @@
       "color": "ffffff"
     },
     {
-      "name": "JSDT",
-      "description": "JSON Selective Disclosure Token",
+      "name": "JPT",
+      "description": "JSON Proof Token",
       "color": "8BF97D"
+    },
+    {
+      "name": "JPA",
+      "description": "JSON Proof Algorithms",
+      "color": "0e8a16"
+    },
+    {
+      "name": "JWP",
+      "description": "JSON Web Proof",
+      "color": "c5def5"
     }
   ],
   "issues": [
@@ -97,10 +107,12 @@
       "author": "selfissued",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "JPT"
+      ],
       "body": "JWS signs a binary payload that it knows nothing about.  JWT specifies a binary payload that is an encoding of JSON claims.  The JWT spec currently specifies signing an array of payloads but *also* specifies sets of claim names for these payloads.\r\n\r\nI'd like us to think about whether we should factor the signing part and the claims part into layered specs, analogous to JWS and JWT.  I realize that we'd still have to declare the list of payloads tied to the key in a way that didn't leak information.  And that if we layer the signing and the claims, we'd likely also have to declare the claims in a way that matched the payloads and that didn't also leak information.\r\n\r\nRestructuring things this way may be more work, but we may end up thanking ourselves because the resulting specs will be more general.",
       "createdAt": "2021-07-22T18:45:27Z",
-      "updatedAt": "2021-09-21T17:19:36Z",
+      "updatedAt": "2021-10-21T00:01:04Z",
       "closedAt": null,
       "comments": [
         {
@@ -119,7 +131,7 @@
         },
         {
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I am not sure I am reading this correctly, but I think the ideal solution would look something like this:\r\n\r\n```\r\nheader: { alg, kid }\r\npayload: JSON Object (string encoded)\r\nproof: { signature (s) + other proof data related to alg }\r\n```\r\n\r\nthen under `alg`:\r\n\r\nA description of the required members of proof and requirements for payload.\r\n\r\nFor example: `BLS_BBS+JSON_POINTER` or `MERKLE+JWS+JSON_POINTER` \r\n \r\nIn other words.... use `alg` to declare normalization (or any form of \"payload transform\"), and require payload to be an opaque `object`.\r\n\r\nfrom this perspective, a JWT is a JWP, with an implied normalization process of: `base64url(header).base64url(payload)`.\r\n\r\nJWP can then inherit JWS alg's for example: `ES256K`, with the only encoding change being `signature` -> `proof`",
           "createdAt": "2021-09-07T19:26:35Z",
           "updatedAt": "2021-09-07T19:33:30Z"
@@ -133,7 +145,7 @@
         },
         {
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> JWP is for natively supporting multiple payloads.\r\n\r\nThis will cause the verifier to have to understand something of the payloads... at the very least, that each of them is independently valuable.\r\n\r\nAre the payloads really independent?\r\n\r\nwill a verifier need to parse each payload independently?\r\n\r\nconsider a scenario where one payload is encoded with `JCS` but the other is encoded with `JSON.stringify` is this allowed?\r\n\r\nForcing payloads to be assembled into data models at the application layer, will prevent JWP from being capable of representing object data models natively, and will require a per object type translation for each standard object data model....\r\n\r\nFor example:\r\n\r\n- https://w3c.github.io/vc-data-model/#credential-subject\r\n- https://w3c.github.io/webauthn/#clientdatajson-serialization\r\n- https://json-schema.org/understanding-json-schema/about.html\r\n- https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc#fetch-the-openid-connect-metadata-document\r\n\r\nin each case, we start with an object, than transform it to a set of JWP payloads, then transform it back (so it conforms with the normative object definition)... \r\n\r\nIf JWP does not define 1 way of doing this, I expect it will happen many different ways... which will harm interop, but perhaps another spec will define the way to use JWP to objects....\r\n\r\n*moving normalization and aggregation outside of JWP might be strategic....*\r\n\r\n\r\n\r\n\r\n\r\n",
           "createdAt": "2021-09-13T18:29:21Z",
           "updatedAt": "2021-09-13T18:30:39Z"
@@ -147,7 +159,7 @@
         },
         {
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "If we do allow for `normalization` and `aggregation` outside of JWP, we can treat the message payloads as 100% opaque JSON, which would be nice... since we don't have to care about how or if they are assembled into objects that conform to existing standards.... but I suspect many folks will still want an answer to the latter, around the same time.\r\n\r\n",
           "createdAt": "2021-09-20T16:01:21Z",
           "updatedAt": "2021-09-20T16:01:21Z"
@@ -161,7 +173,7 @@
         },
         {
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "`signer.addPayload(payload1, options) ` \r\n\r\ndoesn't this just get converted to \r\n\r\n`encoded proof : [ ...,  payload1WithAppliedOptions]` \r\n\r\nis JWP a data format or a protocol for constructing data formats?\r\n\r\nalso, might suggest changing the name before its too late.... `Json Web Proof`... implies it's a JSON based cryptographic data format...  You can encode both numbers and binary in JSON, and you can use JWS to sign binary with detached JWS `b64: false` and `crit: ['b64']`... \r\n\r\nSee https://datatracker.ietf.org/doc/html/rfc7797, you would probably want something similar if it's `critical` a verifier understands some message payloads be processed according to `options` in a specific way.\r\n\r\n\r\nIf the output is JSON, thats good enough reason to keep the name as is... and also to define the inputs in ways that are familiar to JSON developers.",
           "createdAt": "2021-09-20T17:07:40Z",
           "updatedAt": "2021-09-20T17:13:10Z"
@@ -175,7 +187,7 @@
         },
         {
           "author": "OR13",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I tend to agree that small, well defined building blocks, layered correctly is a much better approach than a monolithic spec that defines everything.\r\n\r\nI don't see a way around parsing... given the potential complexity of header values.\r\n\r\nDoes this refinement of your original example align with your thinking?\r\n\r\n```\r\nsigner = algo.signer(issuer_key, options) // options may include binding details\r\nsigner.setProtected(base64url(JSON.stringify( header ))) // may refer to signing key and blinding details\r\nsigner.addPayload(base64url(JSON.stringify({payload: payload1, options})) // options may signal a blinded or numerical value\r\nsigner.addPayload((base64url(JSON.stringify({payload: payload2))\r\nsigner.addPayload((base64url(JSON.stringify({payload: payload3))\r\nsig = signer.sign()\r\n```",
           "createdAt": "2021-09-21T14:07:25Z",
           "updatedAt": "2021-09-21T14:07:25Z"
@@ -224,10 +236,12 @@
       "author": "quartzjer",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "JWP"
+      ],
       "body": "Similar to adapting JWP for JOSE by creating a new top-level type, COSE will also need the same treatment.\r\n\r\nCOSE currently has three major types for Sign, Encrypt, and Mac, each with their own variant for the common use cases of single signer/recipient of Sign1, Encrypt0, and Mac0.\r\n\r\nPlan is to introduce a fourth major type of Proof and Proof1, who's definition is very similar to Sign/Sign1 but instead of a bstr payload it would be:\r\n```cddl\r\nCOSE_Proof1 = [\r\n       Headers,\r\n       payloads : [+ bstr / nil],\r\n       proof : bstr\r\n]\r\n```\r\n",
       "createdAt": "2021-08-18T00:11:59Z",
-      "updatedAt": "2021-09-21T18:24:08Z",
+      "updatedAt": "2021-10-21T00:00:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -248,10 +262,13 @@
       "author": "quartzjer",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "JPA",
+        "JWP"
+      ],
       "body": "As with JWS's signature value, the format of the proof value is opaque to the application.  The proof algorithm defines the format and any encoding is unique to that algorithm.\r\n\r\nOf note, for proof algorithms that support proofs of knowledge or predicate proofs of the values in individual payload slots, each of those proofs uniquely generated during derivation must also be encoded/stored in the overall proof value.\r\n\r\nThese proof algorithms must also provide a programmable interface to applications such that they can request the generation and validation of a proof for each payload.  These interfaces will be unique to the algorithm and its proofing capabilities and may vary significantly from one algorithm to another depending on the underlying cryptographic primitives.\r\n\r\nSince some proof algorithms will require the predicate statement during derivation, applications must take care to limit or require consent on multiple derivations such that a hostile party cannot simply continue to refine the predicate request in order to gain more knowledge of the hidden value.\r\n\r\nThe format of any predicate requests are inherently algorithm and application/protocol context specific, these formats are out of scope of the JWP specification.",
       "createdAt": "2021-09-01T21:47:33Z",
-      "updatedAt": "2021-10-05T20:03:30Z",
+      "updatedAt": "2021-10-21T00:02:12Z",
       "closedAt": null,
       "comments": [
         {
@@ -272,12 +289,22 @@
       "author": "quartzjer",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "JPA"
+      ],
       "body": "Using this issue to track discussions around the common interface to the proof algorithm for the signing, deriving, and verifying steps.",
       "createdAt": "2021-09-07T19:00:55Z",
-      "updatedAt": "2021-09-07T19:00:55Z",
+      "updatedAt": "2021-10-21T00:00:18Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "See the first pass of this at https://github.com/json-web-proofs/json-web-proofs/blob/main/draft-jmiller-json-proof-algorithms.md\r\n",
+          "createdAt": "2021-10-20T23:57:14Z",
+          "updatedAt": "2021-10-20T23:57:14Z"
+        }
+      ]
     },
     {
       "number": 11,
@@ -287,11 +314,15 @@
       "state": "OPEN",
       "author": "quartzjer",
       "authorAssociation": "COLLABORATOR",
-      "assignees": [],
-      "labels": [],
+      "assignees": [
+        "quartzjer"
+      ],
+      "labels": [
+        "JWP"
+      ],
       "body": "Include the few ZKP terms being introduced.",
       "createdAt": "2021-09-21T17:49:27Z",
-      "updatedAt": "2021-09-21T17:49:27Z",
+      "updatedAt": "2021-10-20T23:59:59Z",
       "closedAt": null,
       "comments": []
     },
@@ -304,10 +335,12 @@
       "author": "OR13",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "JPA"
+      ],
       "body": "Some proof types have 2 representations, a. \"root\" or \"full disclosure\" format... and a \"derived\" or \"selective disclosure format\"...\r\n\r\nBBS+ is an example.\r\n\r\nWhile it is possible to verify both formats, I wonder if there is some developer / user experience benefit to refusing to verify the \"root\" type... \r\n\r\nThis might help discourage sharing every attribute, since no verifier (that cared deeply about user privacy) would accept the root format... this would cause the holder to explicitly derive a subset (potentially not strict) of attributes every time they wanted to present a proof.\r\n\r\nPerhaps such privacy considerations are not appropriate for this layer of debate, but certainly clever registration of algorithms might help user privacy here....\r\n\r\n\r\nFor example:\r\n\r\n`BbsBlsSignature2020` -> registered but prohibited.\r\n`BbsBlsSignatureProof2020` -> registered and required.\r\n\r\n",
       "createdAt": "2021-09-25T15:54:42Z",
-      "updatedAt": "2021-10-05T00:39:03Z",
+      "updatedAt": "2021-10-21T00:02:41Z",
       "closedAt": null,
       "comments": [
         {
@@ -331,7 +364,7 @@
       "labels": [],
       "body": "Using this issue to resolve outstanding naming discussions:\r\n- [ ] derive proof vs. generate proof\r\n- [ ] signing vs. generate proof\r\n- [ ] JSDT (JSON Selective Disclosure Token) vs ??? for companion spec to JWP",
       "createdAt": "2021-10-05T17:59:46Z",
-      "updatedAt": "2021-10-05T20:01:28Z",
+      "updatedAt": "2021-10-20T23:55:26Z",
       "closedAt": null,
       "comments": [
         {
@@ -347,6 +380,13 @@
           "body": "See discussion thread here: https://github.com/json-web-proofs/json-web-proofs/pull/10#discussion_r716082098 and https://github.com/json-web-proofs/json-web-proofs/pull/10#discussion_r716083442",
           "createdAt": "2021-10-05T19:39:43Z",
           "updatedAt": "2021-10-05T20:01:28Z"
+        },
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I started going with the following abbreviation pattern:\r\n* **JWP**: JSON Web Proofs (core container definition)\r\n* **JPA**: JSON Proof Algorithms (requirements for and definitions of proof algorithms)\r\n* **JPT**: JSON Proof Tokens  (a near-analogue of JWT, a specific application of JWPs)\r\n\r\nThe analogs also hold true for the CBOR versions of all three, **CWP**, **CPA**, and **CPT**.  ",
+          "createdAt": "2021-10-20T23:55:26Z",
+          "updatedAt": "2021-10-20T23:55:26Z"
         }
       ]
     },
@@ -362,7 +402,7 @@
       "labels": [],
       "body": "I took a stab at a \u201cJWP\u201d encoding of merkle disclosure proofs in a token format\u2026.\r\n\r\nhttps://or13.github.io/jwp-mdt/#name-root-proof\r\n\r\nThe main thing I noticed was some awkwardness regarding nesting JWS inside the protected header.\r\n\r\nit feels like JWP \u201cProtected Header\u201d should reserve a member \u201csignature\u201d and its value should not contain concatenated \u201cheader\u201d or \u201cpayload\u201d attributes\u2026\r\n\r\n```\r\n \"protected\": {\r\n\r\n    \"kid\": \"did:example:123#key-0\"\r\n\r\n    \"root\": \"SflKxwRJSM...\",\r\n    \"alg\": \"MDP+ES256+JP\", // merkle disclosure with json pointer\r\n    \"zip\": \"DEF\"\r\n\r\n    \"signature\": \"SflKxwRJSM\", // over the entire protected header, like a detached jws, but only the signature part.\r\n  },\r\n\r\n```\r\n\r\nOtherwise if we reserved a member \u201cjws\u201d we would have an encoded JWS header, nested insider an encoded JWP header, each with potentially different alg  zip kid, etc\u2026\r\n\r\n```\r\n \"protected\": {\r\n\r\n    \"kid\": \"did:example:123#key-0\"\r\n\r\n    \"root\": \"SflKxwRJSM...\",\r\n    \"alg\": \"MDP+ES256+JP\", // merkle disclosure with json pointer\r\n    \"zip\": \"DEF\"\r\n\r\n    \"jws\": \"{alg, kid, zip}..SflKxwRJSM\", // over the entire protected header, but confusing imo...\r\n  },\r\n\r\n```\r\n\r\nFor merkle proofs a signature over the root must be disclosed, so we need a \"signature\" in the \"protected header\".\r\n\r\n",
       "createdAt": "2021-10-17T20:58:06Z",
-      "updatedAt": "2021-10-17T21:10:59Z",
+      "updatedAt": "2021-10-20T23:49:38Z",
       "closedAt": null,
       "comments": [
         {
@@ -378,6 +418,13 @@
           "body": "I prefer Option 1",
           "createdAt": "2021-10-17T21:09:56Z",
           "updatedAt": "2021-10-17T21:09:56Z"
+        },
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "While it's not as ideal from a parsing perspective, Option 3 is I believe the correct abstraction.\r\n\r\nThe challenge is really in the interface to the JWA, the implementing algorithm isn't expected to know or parse the actual protected header, it is encoded before even reaching it (see [JWS 5.1](https://datatracker.ietf.org/doc/html/rfc7515#section-5.1)).\r\n\r\nThe only part that the algorithm has full control over is the one that it generates, the signature/proof, and this value is opaque to the application layer and preserved as an encoded byte array to be passed back in for validation un-altered.\r\n\r\nThe merkle algorithm will need to encode everything it requires both to generate a disclosure and to validate the disclosed into the singular proof value.  I think it's completely legit for that to still be a JSON object, but to the higher JWP layer it will be an opaque base64url encoded octet string.\r\n\r\nMy pseudocode version of your Option 3 would look like:\r\n```javascript\r\nmerkle_proof = {\r\n  \"proofs\":[ { path, nonce}, ...]\r\n  \"root\":\"SflKxwRJSM...\",\r\n  \"signature\":\"ZflKxwRJSM...\"\r\n}\r\n\r\nproof_b64 = base64url(JSON.stringify(merkle_proof))\r\n\r\nmessage1_b64 = base64url(JSON.stringify({message}))\r\n\r\nheader = {\r\n  \"kid\": \"did:example:123#key-0\",\r\n  \"alg\": \"MDP+ES256+JP\",\r\n  \"zip\": \"DEF\"\r\n}\r\n\r\nheader_b64 = base64url(JSON.stringify(merkle_proof))\r\n\r\njwp_json = {\r\n  \"protected\": header_b64,\r\n  \"payloads\": [ message1_b64, ...]\r\n  \"proof\": proof_b64\r\n}\r\n\r\njwp_compact = header_b64 + \".\" + jwp_json.payloads.join(\"~\") + \".\" + proof_b64\r\n```",
+          "createdAt": "2021-10-20T23:49:38Z",
+          "updatedAt": "2021-10-20T23:49:38Z"
         }
       ]
     }
