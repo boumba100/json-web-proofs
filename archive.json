@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-21T00:45:24.406707+00:00",
+  "timestamp": "2021-10-24T00:39:41.599697+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -402,7 +402,7 @@
       "labels": [],
       "body": "I took a stab at a \u201cJWP\u201d encoding of merkle disclosure proofs in a token format\u2026.\r\n\r\nhttps://or13.github.io/jwp-mdt/#name-root-proof\r\n\r\nThe main thing I noticed was some awkwardness regarding nesting JWS inside the protected header.\r\n\r\nit feels like JWP \u201cProtected Header\u201d should reserve a member \u201csignature\u201d and its value should not contain concatenated \u201cheader\u201d or \u201cpayload\u201d attributes\u2026\r\n\r\n```\r\n \"protected\": {\r\n\r\n    \"kid\": \"did:example:123#key-0\"\r\n\r\n    \"root\": \"SflKxwRJSM...\",\r\n    \"alg\": \"MDP+ES256+JP\", // merkle disclosure with json pointer\r\n    \"zip\": \"DEF\"\r\n\r\n    \"signature\": \"SflKxwRJSM\", // over the entire protected header, like a detached jws, but only the signature part.\r\n  },\r\n\r\n```\r\n\r\nOtherwise if we reserved a member \u201cjws\u201d we would have an encoded JWS header, nested insider an encoded JWP header, each with potentially different alg  zip kid, etc\u2026\r\n\r\n```\r\n \"protected\": {\r\n\r\n    \"kid\": \"did:example:123#key-0\"\r\n\r\n    \"root\": \"SflKxwRJSM...\",\r\n    \"alg\": \"MDP+ES256+JP\", // merkle disclosure with json pointer\r\n    \"zip\": \"DEF\"\r\n\r\n    \"jws\": \"{alg, kid, zip}..SflKxwRJSM\", // over the entire protected header, but confusing imo...\r\n  },\r\n\r\n```\r\n\r\nFor merkle proofs a signature over the root must be disclosed, so we need a \"signature\" in the \"protected header\".\r\n\r\n",
       "createdAt": "2021-10-17T20:58:06Z",
-      "updatedAt": "2021-10-20T23:49:38Z",
+      "updatedAt": "2021-10-21T18:06:41Z",
       "closedAt": null,
       "comments": [
         {
@@ -425,6 +425,13 @@
           "body": "While it's not as ideal from a parsing perspective, Option 3 is I believe the correct abstraction.\r\n\r\nThe challenge is really in the interface to the JWA, the implementing algorithm isn't expected to know or parse the actual protected header, it is encoded before even reaching it (see [JWS 5.1](https://datatracker.ietf.org/doc/html/rfc7515#section-5.1)).\r\n\r\nThe only part that the algorithm has full control over is the one that it generates, the signature/proof, and this value is opaque to the application layer and preserved as an encoded byte array to be passed back in for validation un-altered.\r\n\r\nThe merkle algorithm will need to encode everything it requires both to generate a disclosure and to validate the disclosed into the singular proof value.  I think it's completely legit for that to still be a JSON object, but to the higher JWP layer it will be an opaque base64url encoded octet string.\r\n\r\nMy pseudocode version of your Option 3 would look like:\r\n```javascript\r\nmerkle_proof = {\r\n  \"proofs\":[ { path, nonce}, ...]\r\n  \"root\":\"SflKxwRJSM...\",\r\n  \"signature\":\"ZflKxwRJSM...\"\r\n}\r\n\r\nproof_b64 = base64url(JSON.stringify(merkle_proof))\r\n\r\nmessage1_b64 = base64url(JSON.stringify({message}))\r\n\r\nheader = {\r\n  \"kid\": \"did:example:123#key-0\",\r\n  \"alg\": \"MDP+ES256+JP\",\r\n  \"zip\": \"DEF\"\r\n}\r\n\r\nheader_b64 = base64url(JSON.stringify(merkle_proof))\r\n\r\njwp_json = {\r\n  \"protected\": header_b64,\r\n  \"payloads\": [ message1_b64, ...]\r\n  \"proof\": proof_b64\r\n}\r\n\r\njwp_compact = header_b64 + \".\" + jwp_json.payloads.join(\"~\") + \".\" + proof_b64\r\n```",
           "createdAt": "2021-10-20T23:49:38Z",
           "updatedAt": "2021-10-20T23:49:38Z"
+        },
+        {
+          "author": "OR13",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@quartzjer thanks, this makes a lot of sense, I will try and revise my proposal to align with it better.",
+          "createdAt": "2021-10-21T18:06:41Z",
+          "updatedAt": "2021-10-21T18:06:41Z"
         }
       ]
     }
