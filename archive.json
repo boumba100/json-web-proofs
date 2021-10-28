@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-24T00:39:41.599697+00:00",
+  "timestamp": "2021-10-28T00:38:20.392197+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -1514,6 +1514,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDOFsQObc4txMet",
+      "title": "[WIP] DO NOT MERGE",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/pull/16",
+      "state": "OPEN",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Work in progress on the start of a JSON Proof Token draft, very much still just a skeleton.",
+      "createdAt": "2021-10-28T00:01:39Z",
+      "updatedAt": "2021-10-28T00:01:39Z",
+      "baseRepository": "json-web-proofs/json-web-proofs",
+      "baseRefName": "main",
+      "baseRefOid": "72161d873ca5c8316485c3eaa09da07bc5c8bfd2",
+      "headRepository": "json-web-proofs/json-web-proofs",
+      "headRefName": "jpt_draft",
+      "headRefOid": "6d59612d851f17602098f23fa08f9555a1b84dc6",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
