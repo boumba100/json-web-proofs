@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-28T00:38:20.392197+00:00",
+  "timestamp": "2021-11-04T00:38:46.649525+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -1518,7 +1518,7 @@
     {
       "number": 16,
       "id": "PR_kwDOFsQObc4txMet",
-      "title": "[WIP] DO NOT MERGE",
+      "title": "JSON Proof Tokens",
       "url": "https://github.com/json-web-proofs/json-web-proofs/pull/16",
       "state": "OPEN",
       "author": "quartzjer",
@@ -1527,19 +1527,121 @@
       "labels": [],
       "body": "Work in progress on the start of a JSON Proof Token draft, very much still just a skeleton.",
       "createdAt": "2021-10-28T00:01:39Z",
-      "updatedAt": "2021-10-28T00:01:39Z",
+      "updatedAt": "2021-11-02T19:26:21Z",
       "baseRepository": "json-web-proofs/json-web-proofs",
       "baseRefName": "main",
       "baseRefOid": "72161d873ca5c8316485c3eaa09da07bc5c8bfd2",
       "headRepository": "json-web-proofs/json-web-proofs",
       "headRefName": "jpt_draft",
-      "headRefOid": "6d59612d851f17602098f23fa08f9555a1b84dc6",
+      "headRefOid": "f2de4bbf18a0c95dd16bf9d76c9fb4b022aa2659",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "While still a draft, I believe it's at a good point to review and potentially merge.",
+          "createdAt": "2021-11-02T18:31:58Z",
+          "updatedAt": "2021-11-02T18:31:58Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFsQObc4vbs9l",
+          "commit": {
+            "abbreviatedOid": "f2de4bb"
+          },
+          "author": "OR13",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-11-02T18:38:57Z",
+          "updatedAt": "2021-11-02T18:38:58Z",
+          "comments": [
+            {
+              "originalPosition": 102,
+              "body": "this is layout right? are other layouts configurable, or is this the only supported one?",
+              "createdAt": "2021-11-02T18:38:57Z",
+              "updatedAt": "2021-11-02T18:38:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4vbu_H",
+          "commit": {
+            "abbreviatedOid": "f2de4bb"
+          },
+          "author": "selfissued",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-11-02T18:48:24Z",
+          "updatedAt": "2021-11-02T18:48:25Z",
+          "comments": [
+            {
+              "originalPosition": 65,
+              "body": "Per the discussion on the 2-Nov-21 DIF JWP call, we need clearer language than \"understood\".  There's a distinction between knowing how to disclose a claim as a mechanical process and full understanding the semantics of a claim.",
+              "createdAt": "2021-11-02T18:48:24Z",
+              "updatedAt": "2021-11-02T18:48:25Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4vbvOz",
+          "commit": {
+            "abbreviatedOid": "f2de4bb"
+          },
+          "author": "selfissued",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "I would merge this either now or after addressing the small number of current review comments.  For one thing, I'd like the draft to be checked into main so I can create PRs against it.",
+          "createdAt": "2021-11-02T18:49:30Z",
+          "updatedAt": "2021-11-02T18:49:30Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOFsQObc4vb1c3",
+          "commit": {
+            "abbreviatedOid": "f2de4bb"
+          },
+          "author": "OR13",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-11-02T19:17:58Z",
+          "updatedAt": "2021-11-02T19:17:59Z",
+          "comments": [
+            {
+              "originalPosition": 102,
+              "body": "Interested to see this debate over \"key\" vs \"header\" embedding for this value.\r\n\r\nI tend to have a natural frustation with binding keys to specifc uses arbitrarily.\r\n\r\nMostly because it violates the principle of \"if it can happen, it does happen\"...\r\n\r\nYou can say this key is \"signing\" and not \"encryption\" but if its supports ECHD, you can't stop folks from doing that....\r\n\r\nWe see this play out over and over again... most recently in the did core concept of \"verification relationships\"... or \"keys used for specific purposes like authentication or credential issuance\".\r\n\r\nThis feels even worse than that to me, since its \"keys used to issue specific credential types\".... I'd rather not see that zkp-cl feature repeated here.\r\n\r\nInstead I would like to see a system where the same key, might be for many purposes, without revealing what purposes it was used for... for example:\r\n\r\n\r\n```\r\n{\r\n      \"kty\": \"EC\",\r\n      \"crv\": \"P-256\",\r\n      \"x\": \"KSbFyuU2BC1erMom2dMnQM5X4ifBdDXm1yQujBlGbrM\",\r\n      \"y\": \"e50tXUMdJkdPseZkuIgCR_FMZ_zozeKusq6W4tr6-2M\"\r\n}\r\n```\r\n\r\nI use it for encryption, I use it for signing, I use it for merkle proofs, you don't know any of that by seeing the key.",
+              "createdAt": "2021-11-02T19:17:59Z",
+              "updatedAt": "2021-11-02T19:17:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFsQObc4vb3J3",
+          "commit": {
+            "abbreviatedOid": "f2de4bb"
+          },
+          "author": "OR13",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-11-02T19:26:20Z",
+          "updatedAt": "2021-11-02T19:26:21Z",
+          "comments": [
+            {
+              "originalPosition": 102,
+              "body": "Another consideration is that you might want to encode `lyt` by reference instead of by value....\r\n\r\nConsider a commitment to salted hash (lyt)... etc... it might be that there are really large potential space savings for large \"payload types\"... when you don't need to keep repeating the payload structure in the header or the key... btw this is what linked data contexts are supposed to help you do... maybe they didn't solve the problem the best way... but imo its still worth considering the concept of an `lyt` registry... since someone will create that, regardless of what we want.",
+              "createdAt": "2021-11-02T19:26:20Z",
+              "updatedAt": "2021-11-02T19:26:21Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
