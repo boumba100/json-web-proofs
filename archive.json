@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-11-04T00:38:46.649525+00:00",
+  "timestamp": "2021-11-07T00:39:57.055261+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -1520,24 +1520,26 @@
       "id": "PR_kwDOFsQObc4txMet",
       "title": "JSON Proof Tokens",
       "url": "https://github.com/json-web-proofs/json-web-proofs/pull/16",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "quartzjer",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Work in progress on the start of a JSON Proof Token draft, very much still just a skeleton.",
       "createdAt": "2021-10-28T00:01:39Z",
-      "updatedAt": "2021-11-02T19:26:21Z",
+      "updatedAt": "2021-11-05T21:22:54Z",
       "baseRepository": "json-web-proofs/json-web-proofs",
       "baseRefName": "main",
       "baseRefOid": "72161d873ca5c8316485c3eaa09da07bc5c8bfd2",
       "headRepository": "json-web-proofs/json-web-proofs",
       "headRefName": "jpt_draft",
       "headRefOid": "f2de4bbf18a0c95dd16bf9d76c9fb4b022aa2659",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2021-11-05T21:22:54Z",
+      "mergedAt": "2021-11-05T21:22:54Z",
+      "mergedBy": "dwaite",
+      "mergeCommit": {
+        "oid": "8ba77cf002287fd9d27ac3ef75e87047391ca5da"
+      },
       "comments": [
         {
           "author": "quartzjer",
@@ -1574,7 +1576,7 @@
             "abbreviatedOid": "f2de4bb"
           },
           "author": "selfissued",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2021-11-02T18:48:24Z",
@@ -1594,7 +1596,7 @@
             "abbreviatedOid": "f2de4bb"
           },
           "author": "selfissued",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "APPROVED",
           "body": "I would merge this either now or after addressing the small number of current review comments.  For one thing, I'd like the draft to be checked into main so I can create PRs against it.",
           "createdAt": "2021-11-02T18:49:30Z",
