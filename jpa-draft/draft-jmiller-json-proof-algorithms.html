@@ -1169,12 +1169,19 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-sign" class="section-name selfRef">Sign</a>
         </h3>
 <p id="section-4.1-1">The JWP is first created as the output of a proof algorithm's <code>sign</code> operation.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">TODO:
-* MUST support the protected header as an octet string
-* MUST support one or more payloads, each as an octet string
-* MAY support the output of the <code>request_signature</code> operation from the requesting party
-* MAY support signing hidden payloads with no octet string
-* MUST include integrity protection for the header and all payloads, specify all digest and hash2curve methods<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">TODO:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.1-3.1">MUST support the protected header as an octet string<a href="#section-4.1-3.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.1-3.2">MUST support one or more payloads, each as an octet string<a href="#section-4.1-3.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.1-3.3">MAY support the output of the <code>request_signature</code> operation from the requesting party<a href="#section-4.1-3.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.1-3.4">MAY support signing hidden payloads with no octet string<a href="#section-4.1-3.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.1-3.5">MUST include integrity protection for the header and all payloads, specify all digest and hash2curve methods<a href="#section-4.1-3.5" class="pilcrow">¶</a>
+</li>
+        </ul>
 </section>
 </div>
 <div id="verify-signature">
@@ -1183,10 +1190,15 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-verify-signature" class="section-name selfRef">Verify Signature</a>
         </h3>
 <p id="section-4.2-1">Performed by the requesting party to verify the newly signed JWP.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">TODO:
-* MAY support local state from the <code>request_signature</code> operation
-* MAY return a modified JWP for serialized storage without the local state
-* MAY support verifying any hidden payloads<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">TODO:<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.2-3.1">MAY support local state from the <code>request_signature</code> operation<a href="#section-4.2-3.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.2-3.2">MAY return a modified JWP for serialized storage without the local state<a href="#section-4.2-3.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.2-3.3">MAY support verifying any hidden payloads<a href="#section-4.2-3.3" class="pilcrow">¶</a>
+</li>
+        </ul>
 </section>
 </div>
 <div id="prove">
@@ -1195,14 +1207,23 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-prove" class="section-name selfRef">Prove</a>
         </h3>
 <p id="section-4.3-1">Used to apply any selective disclosure preferences and perform any unlinkability transformations.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
-<p id="section-4.3-2">TODO:
-* MAY support the output of the <code>request_proof</code> operation from the requesting party
-* MUST support ability to hide any payload
-* MUST always include the protected header
-* MAY add/append new payloads
-* MAY replace the proof value
-* MUST indicate if the input JWP is able to be used again
-* MAY support an input JWP that resulted from a previous <code>prove</code> operation<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">TODO:<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.3-3.1">MAY support the output of the <code>request_proof</code> operation from the requesting party<a href="#section-4.3-3.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.3-3.2">MUST support ability to hide any payload<a href="#section-4.3-3.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.3-3.3">MUST always include the protected header<a href="#section-4.3-3.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.3-3.4">MAY add/append new payloads<a href="#section-4.3-3.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.3-3.5">MAY replace the proof value<a href="#section-4.3-3.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.3-3.6">MUST indicate if the input JWP is able to be used again<a href="#section-4.3-3.6" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.3-3.7">MAY support an input JWP that resulted from a previous <code>prove</code> operation<a href="#section-4.3-3.7" class="pilcrow">¶</a>
+</li>
+        </ul>
 </section>
 </div>
 <div id="verify-proof">
@@ -1211,12 +1232,19 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-verify-proof" class="section-name selfRef">Verify Proof</a>
         </h3>
 <p id="section-4.4-1">Performed by the requesting party on a JWP to verify any revealed payloads and/or assertions about them from the proving party, while also verifying they are the same payloads and ordering as witnessed by the signing party.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
-<p id="section-4.4-2">TODO:
-* MUST verify the integrity of all revealed payloads
-* MUST verify any included assertions about a hidden payload as true
-* MAY support local state from the <code>request_proof</code> operation
-* Out of scope is app interface to interact with the resulting verified assertions (may also be part of the request proof state)
-* MAY indicate if the JWP can be re-used to generate a new proof<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+<p id="section-4.4-2">TODO:<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.4-3.1">MUST verify the integrity of all revealed payloads<a href="#section-4.4-3.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.4-3.2">MUST verify any included assertions about a hidden payload as true<a href="#section-4.4-3.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.4-3.3">MAY support local state from the <code>request_proof</code> operation<a href="#section-4.4-3.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.4-3.4">Out of scope is app interface to interact with the resulting verified assertions (may also be part of the request proof state)<a href="#section-4.4-3.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.4-3.5">MAY indicate if the JWP can be re-used to generate a new proof<a href="#section-4.4-3.5" class="pilcrow">¶</a>
+</li>
+        </ul>
 </section>
 </div>
 <div id="request-signature">
