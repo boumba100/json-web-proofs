@@ -4,7 +4,7 @@
 
 todo                                                           J. Miller
                                                            Ping Identity
-                                                         12 October 2021
+                                                         9 November 2021
 
 
                          JSON Proof Algorithms
@@ -27,6 +27,8 @@ Table of Contents
      4.2.  Verify Signature
      4.3.  Prove
      4.4.  Verify Proof
+     4.5.  Request Signature
+     4.6.  Request Proof
    5.  Security Considerations
    6.  IANA Considerations
    7.  Normative References
@@ -64,12 +66,14 @@ Table of Contents
 4.  Algorithm Basics
 
    The four principle interactions that every proof algorithm MUST
-   support are sign, verify_signature, prove, and verify_proof.
+   support are [sign](#sign), [verify_signature](#verify-signature),
+   [prove](#prove), and [verify_proof](#verify-proof).
 
    Some algorithms MAY also support two additional interactions of
-   request_signature and request_proof.  While these do not use a JWP
-   container as input or output, they are included here in order to
-   maximize interoperability across proof algorithm implementations.
+   [request_signature](#request-signature) and [request_proof](#request-
+   proof).  While these do not use a JWP container as input or output,
+   they are included here in order to maximize interoperability across
+   proof algorithm implementations.
 
 4.1.  Sign
 
@@ -116,6 +120,14 @@ Table of Contents
    is app interface to interact with the resulting verified assertions
    (may also be part of the request proof state) * MAY indicate if the
    JWP can be re-used to generate a new proof
+
+4.5.  Request Signature
+
+   TODO
+
+4.6.  Request Proof
+
+   TODO
 
 5.  Security Considerations
 

@@ -4,19 +4,18 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>JSON Web Proof</title>
+<title>JSON Proof Token</title>
 <meta content="Jeremie Miller" name="author">
-<meta content="David Waite" name="author">
 <meta content="
-       The JOSE set of standards established JSON-based container formats for  Keys ,  Signatures , and  Encryption .  They also established  IANA registries  to enable the algorithms and representations used for them to be extended.  Since those were created, newer cryptographic algorithms that support selective disclosure and unlinkability have matured and started seeing early market adoption. 
-       This document adds to the JOSE family by standardizing a new container format very similar in purpose and design to a JWS, called a  JSON Web Proof (JWP) .  It adds support for the new algorithms by way of containing multiple individual payloads instead of a singular one as well as an additional proof-generation step to apply the privacy preserving selection and computation. 
+       JSON Proof Token (JPT) is a compact, URL-safe, privacy enabled means of representing claims to be transferred between three parties.  The claims in a JPT are encoded as JSON objects that are used as the payloads of a JSON Web Proof (JWP) structure, enabling the claims to be digitally signed and selectively disclosed.  JPTs also support reusability and unlinkability when using Zero-Knowledge Proofs (ZKPs). 
     " name="description">
 <meta content="xml2rfc 3.11.1" name="generator">
 <meta content="jose" name="keyword">
 <meta content="zkp" name="keyword">
 <meta content="jwp" name="keyword">
 <meta content="jws" name="keyword">
-<meta content="draft-jmiller-json-web-proof" name="ietf.draft">
+<meta content="jpt" name="keyword">
+<meta content="draft-jmiller-json-proof-token" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.11.1
     Python 3.9.5
@@ -35,7 +34,7 @@
     setuptools 52.0.0
     six 1.15.0
 -->
-<link href="draft-jmiller-json-web-proof.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-jmiller-json-proof-token.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -1044,11 +1043,11 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <table class="ears">
 <thead><tr>
 <td class="left"></td>
-<td class="center">jwp</td>
+<td class="center">jpa</td>
 <td class="right">November 2021</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Miller &amp; Waite</td>
+<td class="left">Miller</td>
 <td class="center">Standards Track</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
@@ -1058,24 +1057,19 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
 <dd class="workgroup">todo</dd>
-<dt class="label-authors">Authors:</dt>
+<dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
       <div class="author-name">J. Miller</div>
 <div class="org">Ping Identity</div>
 </div>
-<div class="author">
-      <div class="author-name">D. Waite</div>
-<div class="org">Ping Identity</div>
-</div>
 </dd>
 </dl>
 </div>
-<h1 id="title">JSON Web Proof</h1>
+<h1 id="title">JSON Proof Token</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">The JOSE set of standards established JSON-based container formats for <a href="https://datatracker.ietf.org/doc/rfc7517/">Keys</a>, <a href="https://datatracker.ietf.org/doc/rfc7515/">Signatures</a>, and <a href="https://datatracker.ietf.org/doc/rfc7516/">Encryption</a>.  They also established <a href="https://www.iana.org/assignments/jose/jose.xhtml">IANA registries</a> to enable the algorithms and representations used for them to be extended.  Since those were created, newer cryptographic algorithms that support selective disclosure and unlinkability have matured and started seeing early market adoption.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">This document adds to the JOSE family by standardizing a new container format very similar in purpose and design to a JWS, called a <em>JSON Web Proof (JWP)</em>.  It adds support for the new algorithms by way of containing multiple individual payloads instead of a singular one as well as an additional proof-generation step to apply the privacy preserving selection and computation.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">JSON Proof Token (JPT) is a compact, URL-safe, privacy enabled means of representing claims to be transferred between three parties.  The claims in a JPT are encoded as JSON objects that are used as the payloads of a JSON Web Proof (JWP) structure, enabling the claims to be digitally signed and selectively disclosed.  JPTs also support reusability and unlinkability when using Zero-Knowledge Proofs (ZKPs).<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <div id="toc">
 <section id="section-toc.1">
@@ -1093,44 +1087,50 @@ svg [stroke="fill"], svg [fill^="#fff"] {
             <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="xref">3</a>.  <a href="#name-background" class="xref">Background</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-jwp-format" class="xref">JWP Format</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-design-considerations" class="xref">Design Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-protected-header" class="xref">Protected Header</a></p>
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-unlinkability" class="xref">Unlinkability</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-payloads" class="xref">Payloads</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-selective-disclosure" class="xref">Selective Disclosure</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
-                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-proof" class="xref">Proof</a></p>
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-familiarity" class="xref">Familiarity</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="xref">4.4</a>.  <a href="#name-proofs" class="xref">Proofs</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-serializations" class="xref">Serializations</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
-                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-compact-serialization" class="xref">Compact Serialization</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-layout" class="xref">Layout</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="xref">5.2</a>.  <a href="#name-json-serialization" class="xref">JSON Serialization</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-payloads" class="xref">Payloads</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-disclosed" class="xref">Disclosed</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="xref">6.2</a>.  <a href="#name-proof-methods" class="xref">Proof Methods</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
-</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-A" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1141,36 +1141,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">The JOSE specifications are very widely deployed and well supported technology combining security with the accessibility of JSON.  JWTs <span>[<a href="#RFC7519" class="xref">RFC7519</a>]</span> are one of the most common encapsulation formats for identity and access claims, which are used with the OpenID Connect standards.  More recently, JOSE and JWTs are being integrated as part of the W3C's Verifiable Credentials work to implement Decentralized Identity use-cases.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">With these new use cases, there is an increased focus on adopting privacy-protecting cryptographic primitives.  While such primitives are still an active area of academic and applied research, the leading candidates introduce new patterns that are not currently supported by JOSE.  These new patterns are largely focused on two areas: supporting selective disclosure when presenting a credential and minimizing correlation through the use of Zero-Knowledge Proofs (ZKPs), instead of traditional signatures.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">There are a growing number of these cryptographic primitives that support selective disclosure while protecting privacy across multiple presentations.  Examples that have already been or are being deployed in the context of Verifiable Credentials are:<a href="#section-1-3" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-1-4.1">
-          <a href="https://eprint.iacr.org/2012/562.pdf">CL Signatures</a><a href="#section-1-4.1" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-1-4.2">
-          <a href="http://www.zurich.ibm.com/idemix">IDEMIX</a><a href="#section-1-4.2" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-1-4.3">
-          <a href="https://github.com/mattrglobal/bbs-signatures">BBS+</a><a href="#section-1-4.3" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-1-4.4">
-          <a href="https://github.com/transmute-industries/merkle-disclosure-proof-2021">MerkleDisclosureProof2021</a><a href="#section-1-4.4" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-1-4.5">
-          <a href="https://eprint.iacr.org/2020/979">Mercural Signatures</a><a href="#section-1-4.5" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-1-4.6">
-          <a href="https://eprint.iacr.org/2015/525.pdf">PS Signatures</a><a href="#section-1-4.6" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-1-4.7">
-          <a href="https://www.microsoft.com/en-us/research/project/u-prove/">U-Prove</a><a href="#section-1-4.7" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-1-4.8">
-          <a href="https://github.com/microsoft/Spartan">Spartan</a><a href="#section-1-4.8" class="pilcrow">¶</a>
-</li>
-      </ul>
-<p id="section-1-5">All of these follow the same pattern of taking multiple claims (a.k.a., "attributes" or "messages" in the literature) and binding them together into an issued credential.  These are then later securely one-way transformed into a presentation that reveals potentially only a subset of the original claims, predicate proofs of the claim values, or only proofs of knowledge of the claims.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-1">JSON Proof Token (JPT) is a compact claims representation format intended to be used in the same ways as a JWT but with additional support for selective disclosure and unlinkability.  JPTs encode claim values to be transmitted as JSON payloads of a JSON Web Proof (JWP).  JPTs are always represented using the JWP Compact Serialization.<a href="#section-1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1189,156 +1160,178 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
       <h2 id="name-background">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-background" class="section-name selfRef">Background</a>
       </h2>
-<p id="section-3-1">A <em>JSON Web Proof (JWP)</em> is very similar to a JWS <span>[<a href="#RFC7515" class="xref">RFC7515</a>]</span>, with the addition that it can contain multiple individual payloads instead of a singular one.  New JWP-supporting algorithms are then able to separate and act on the individual payloads contained within.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">In addition to the JWS <code>sign</code> and <code>verify</code> interactions, JWP also importantly adds a <code>prove</code> processing step for interaction with the algorithm to perform the selective disclosure and privacy preserving transformations.  This allows for multi-party interactions where a credential is issued from one party, held by another party, then used to generate and present proofs about the credential to another verifying party.  While <code>sign</code> only occurs when a JWP is being created, the <code>prove</code> and <code>verify</code> steps may be safely repeated on a signed JWP (when supported by the algorithm).<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">The intent of JSON Web Proofs is to establish a common container format for multiple payloads that can be integrity-verified against a proof value.  It does not create or specify any cryptographic protocols,  interaction protocols, or custom options for algorithms with additional capabilities.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<p id="section-3-4">Algorithm definitions that support JWPs will be done in separate companion specifications - just as the [JSON Web Algorithms] <span>[<a href="#RFC7518" class="xref">RFC7518</a>]</span> specification does for JWS and JWE <span>[<a href="#RFC7516" class="xref">RFC7516</a>]</span>.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-1">JWP defines a clean abstraction around the parts of a container binding together a protected header and one or more payloads.  It does not define how claims are organized into payloads and what formats they are in.  JPTs are intended to be as close to a JWT as possible, while also supporting the selective disclosure and unlinkability of JWPs.<a href="#section-3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="jwp-format">
+<div id="design-considerations">
 <section id="section-4">
-      <h2 id="name-jwp-format">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-jwp-format" class="section-name selfRef">JWP Format</a>
+      <h2 id="name-design-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-design-considerations" class="section-name selfRef">Design Considerations</a>
       </h2>
-<p id="section-4-1">A JWP always contains a protected header along with one or more specific payloads.  The payloads are always serialized and processed as an ordered array.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">An individual payload may contain structured information such as a JSON document or be a simple value such as a number, string, or even a binary image.  Some algorithms may support payload values that are cryptographic values such as elliptic curve points or blinded secrets.<a href="#section-4-2" class="pilcrow">¶</a></p>
-<div id="protected-header">
+<p id="section-4-1">The rationale behind the deisgn for JSON Proof Tokens is important when considering how it is structured.  These sections detail the underlying reasoning for the approach defined by JPTs.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<div id="unlinkability">
 <section id="section-4.1">
-        <h3 id="name-protected-header">
-<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-protected-header" class="section-name selfRef">Protected Header</a>
+        <h3 id="name-unlinkability">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-unlinkability" class="section-name selfRef">Unlinkability</a>
         </h3>
-<p id="section-4.1-1">Although there are multiple payloads, the protected header still represents the JWP as a whole.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">It is recommended that payload-specific information is not included in the header and is handled outside of the cryptographic envelope.  This is to minimize any correlatable signals in the metadata, to prevent a verifier from categorizing based on header changes that may varry between multiple JWPs.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
-<p id="section-4.1-3">The JWP protected header MUST have at minimum an <code>alg</code> that supports proofs with signing, proving, and verifying processing steps.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.1-4">For example:<a href="#section-4.1-4" class="pilcrow">¶</a></p>
-<div id="section-4.1-5">
-<pre class="lang-json sourcecode">{
-    "alg":"BBS-BLS12"
-}
-</pre><a href="#section-4.1-5" class="pilcrow">¶</a>
+<p id="section-4.1-1">Supporting unlinkability is perhaps the most challenging design constraint for JPTs.  Even the smallest oversight can introduce a subtle vector for relying parties to collude and correlate one or more subjects across their usage.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">The principle tools to prevent this are data minimization and uniformity.  All data included in an individual JPT must be critically minimized to only the values that are cryptographic in nature and able to be selectively disclosed with consent or transformed by the proof algorithm when presented.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">Any other data that is repeated across multiple JPTs must be externalized so that it is uniform across every issuance.  This includes preventing the usage of optional headers, dynamic mapping of claims to payloads, changes to how many payloads are included, and the ordering of the payloads.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+</section>
 </div>
-<p id="section-4.1-6">Every JWP algorithm must include a digest method that is used to generate a hash of the base64url serialized protected header.  The protected header cannot be selectively disclosed and the digest value MUST be included in all proof values.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
-<p id="section-4.1-7">In order to minimize linkability, the same protected header SHOULD be static across all JWPs for a given key or issuer.  All re-used headers MUST have the same base64url serialized value to avoid any non-deterministic JSON serialization, and the JWP algorithm's digest method MUST have a deterministic output for identical inputs.<a href="#section-4.1-7" class="pilcrow">¶</a></p>
+<div id="selective-disclosure">
+<section id="section-4.2">
+        <h3 id="name-selective-disclosure">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-selective-disclosure" class="section-name selfRef">Selective Disclosure</a>
+        </h3>
+<p id="section-4.2-1">While JWPs provide the underling structure for easily supporting selective disclosure, JPTs must go a step further to ensure that applications can effectively provide choice and consent on exactly what is being disclosed.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">To accomplish this it is important that every single payload that is disclosed is understood by the supporting software as to which claim it is and what that value is.  JPTs do not support disclosing claims that are intended to be private from the issuer to the relying party, all revealed payloads must be mapped to a claim that is accessible to the application.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="familiarity">
+<section id="section-4.3">
+        <h3 id="name-familiarity">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-familiarity" class="section-name selfRef">Familiarity</a>
+        </h3>
+<p id="section-4.3-1">JPTs are intended to as close to a JWT as possible in order to provide the simplest transition for any JWT-based system to add support for a JPT.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">Although there are some stark differences in the lifecycle of a JPT, from the application's perspective the interface to a JPT can be made fairly similar: a JSON object containing a mix of required and optional claims with well-understood values.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-3">The most significant divergence required by JPTs is that of supporting values that may be disclosed or may instead only be a proof about the value.  Applications are required to interact with the JPT on a claim-by-claim basis instead of just verifying a JWT and then being able to interact with the JSON body directly.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="proofs">
+<section id="section-4.4">
+        <h3 id="name-proofs">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-proofs" class="section-name selfRef">Proofs</a>
+        </h3>
+<p id="section-4.4-1">In order to generate a variety of ZKPs of knowledge, range, membeship, or other predicates it is essential that the individual payloads are singular values.  This greatly simplifies the task of linking a derived proof of a given claim to the specific payload that was also signed by the issuer.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.4-2">While JPTs definitely support protected claims that have more complex object or array compound values, it must also allow and encourage protecting simple claim values individually in a single payload such as strings, numbers, and booleans.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="layout">
+<section id="section-5">
+      <h2 id="name-layout">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-layout" class="section-name selfRef">Layout</a>
+      </h2>
+<p id="section-5-1">A JSON Proof Token is defined as the combination of two different parts: the layout and the payloads. Given the design considerations the simplest solution is to move the token's encompassing JSON body to an external shared definition while preserving only the individual claim values in the JWP container.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The layout definition MUST be accessible to and known by all parties that will process the JPT.  Since this is also true of the public key, the ideal location for the layout definition is in the JWK itself. (Note: layout definition could move to a standalone JSON Proof Key specification)<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">A layout is the symbolic equivalent to the JSON body of a JWT, containing all of the claim names along with any additional structures or fixed metadata.  The individual claim values are not included in the layout and instead are replaced by payload references.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-4">These claim value references can be present in two different types: direct and indirect.  A direct reference is always an array with a single integer value, acting as an index into the array of payloads contained in the JPT.  All payloads referenced directly MUST be a string representing a JSON value.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">Indirect references are those understood only in the context of supporting applications.  Payloads with indirect references will have content types that vary by the given context and may be textual or binary.  This allows JPTs to include raw values without incurring the penalty of a double-encoding into a JSON-safe string.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">Layout definition object, using single-integer-value arrays as the index references to which payload:<a href="#section-5-6" class="pilcrow">¶</a></p>
+<div id="section-5-7">
+<pre class="lang-json sourcecode">{
+  "kty": "ZKP",
+  "crv": "Bls12381G2",
+  "x": "qM4Gi4razIIAXpDSlHB7-pPoo6GOChoBbSLxr7rNwb8mxyVykbmKQGNb0kI7iegDAs9cIwf6DAsCGi7BVs48MG-iw4PsP0L136g2gQpZjrKsr4GbkV5EIx0R2BjIJNfQ",
+  "kid": "HjfcpyjuZQ-O8Ye2hQnNbT9RbbnrobptdnExR0DUjU8",
+  "alg": "BBS",
+  "use": "proof",
+  "lyt": {
+    "iat": [0],
+    "exp": [1],
+    "name": [2],
+    "email": [3],
+    "photo": {
+      "type":"image/jpeg",
+      "data": 4
+    }
+  }
+}
+</pre><a href="#section-5-7" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
 <div id="payloads">
-<section id="section-4.2">
-        <h3 id="name-payloads">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-payloads" class="section-name selfRef">Payloads</a>
-        </h3>
-<p id="section-4.2-1">Payloads are always represented and processed as individual octet strings and arranged in an ordered array when there are multiple.  All application context of the placement and encoding of each payload value is out of scope of this specification and should be well defined and documented by the application or other specifications.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">In order to support ZKPs, individual payloads cannot be serialized before they are passed into an algorithm implementation.  This enables the algorithms to accept and internally encode elliptic curve points, blinded values, plain numbers, membership keys, etc.  Implementations are therefore required to provide optional arguments for each payload such that the application can utilize these capabilities as needed.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
-<p id="section-4.2-3">Any one or more payloads may be non-disclosed in a JWP.  When a payload is not disclosed the position of other payloads does not change - the resulting array will simply be sparse and only contain the disclosed payloads.  The disclosed payloads will always be in same array positions in order to preserve any index-based references by the application across the whole JWP lifecycle.  How the sparse array is represented is specific to the serialization used.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="proof">
-<section id="section-4.3">
-        <h3 id="name-proof">
-<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-proof" class="section-name selfRef">Proof</a>
-        </h3>
-<p id="section-4.3-1">The proof value is a binary octet string that is opaque to applications.  Individual proof-supporting algorithms are responsible for the contents and security of the proof value along with any required internal structures to it.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
-<p id="section-4.3-2">Implementations will also be required to provide optional arguments for each payload as input into the <code>prove</code> step.  These arguments can be used for generating predicate proofs, linking options, etc.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
-<p id="section-4.3-3">Algorithms SHOULD generate a new un-correlatable proof value during the <code>prove</code> step.  A JWP may also be single-use, where correlation across multiple derivations is not a factor.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-</section>
-</div>
-<div id="serializations">
-<section id="section-5">
-      <h2 id="name-serializations">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-serializations" class="section-name selfRef">Serializations</a>
+<section id="section-6">
+      <h2 id="name-payloads">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-payloads" class="section-name selfRef">Payloads</a>
       </h2>
-<p id="section-5-1">Each disclosed payload MUST be base64url encoded when preparing it to be serialized.  The header and proof are also individually base64url encoded.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<p id="section-5-2">Like JWS, JWP supports both a Compact Serialization and a JSON Serialization.<a href="#section-5-2" class="pilcrow">¶</a></p>
-<div id="compact-serialization">
-<section id="section-5.1">
-        <h3 id="name-compact-serialization">
-<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-compact-serialization" class="section-name selfRef">Compact Serialization</a>
+<p id="section-6-1">Application resolves each reference as required when processing the layout.  Resolution can result in one of three things:
+1. A disclosed JSON value
+2. A proof method
+3. A <code>null</code> value<a href="#section-6-1" class="pilcrow">¶</a></p>
+<div id="disclosed">
+<section id="section-6.1">
+        <h3 id="name-disclosed">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-disclosed" class="section-name selfRef">Disclosed</a>
         </h3>
-<p id="section-5.1-1">The individually encoded payloads are concatenated with the <code>~</code> character to form an ordered delimited array. Any non-disclosed payloads are simply left blank, resulting in sequential <code>~~</code> characters such that all payload positions are preserved.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">The header, payloads, and proof are then concatenated with a <code>.</code> character to form the final compact serialization.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.1-3">Example compact serialization:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
-<p id="section-5.1-4"><code>eyJhbGciOiJCQlMtQkxTMTIifQ.eyJnaXZlbl9uYW1lIjoiSmFuZSIsImZhbWlseV9uYW1lIjoiRG9lIn0~eyJlbWFpbCI6ImphbmVkb2VAZXhhbXBsZS5jb20ifQ~eyJiaXJ0aGRhdGUiOiIwMDAwLTAzLTIyIn0.F9uMuJzNBqj4j-HPTvWjUN_MNoe6KRH0818WkvDn2Sf7kg1P17YpNyzSB-CH57AWDFunU13tL8oTBDpBhODckelTxHIaEfG0rNmqmjK6DOs0_ObksTZh7W3OTbqfD2h4C_wqqMQHSWdXXnojwyFDEg</code><a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-1.1">all referenced directly by layout are JSON strings<a href="#section-6.1-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-1.2">may be indirect references w/ non-JSON values<a href="#section-6.1-1.2" class="pilcrow">¶</a>
+</li>
+        </ul>
 </section>
 </div>
-<div id="json-serialization">
-<section id="section-5.2">
-        <h3 id="name-json-serialization">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-json-serialization" class="section-name selfRef">JSON Serialization</a>
+<div id="proof-methods">
+<section id="section-6.2">
+        <h3 id="name-proof-methods">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-proof-methods" class="section-name selfRef">Proof Methods</a>
         </h3>
-<p id="section-5.2-1">Non-disclosed payloads in the JSON serialization are represented with a <code>null</code> value.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.2-2">Example flattened JSON serialization:<a href="#section-5.2-2" class="pilcrow">¶</a></p>
-<div id="section-5.2-3">
-<pre class="lang-json sourcecode">{
-    "protected":"eyJhbGciOiJCQlMtQkxTMTIifQ",
-    "payloads":[
-        "eyJnaXZlbl9uYW1lIjoiSmFuZSIsImZhbWlseV9uYW1lIjoiRG9lIn0",
-        "eyJlbWFpbCI6ImphbmVkb2VAZXhhbXBsZS5jb20ifQ",
-        "eyJiaXJ0aGRhdGUiOiIwMDAwLTAzLTIyIn0"
-    ],
-    "proof":"F9uMuJzNBqj4j-HPTvWjUN_MNoe6KRH0818WkvDn2Sf7kg1P17YpNyzSB-CH57AWDFunU13tL8oTBDpBhODckelTxHIaEfG0rNmqmjK6DOs0_ObksTZh7W3OTbqfD2h4C_wqqMQHSWdXXnojwyFDEg"
-}
-</pre><a href="#section-5.2-3" class="pilcrow">¶</a>
-</div>
+<ul class="normal">
+<li class="normal" id="section-6.2-1.1">proof methods can be returned instead of a disclosed payload<a href="#section-6.2-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.2-1.2">these are generated by the algorithm from information in the JWP's proof value<a href="#section-6.2-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.2-1.3">a proof method may be custom based on the capabilities of the algorithm<a href="#section-6.2-1.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.2-1.4">
+            <p id="section-6.2-1.4.1">define common proof method types avalable?<a href="#section-6.2-1.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.2-1.4.2.1">range<a href="#section-6.2-1.4.2.1" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-6.2-1.4.2.2">membership<a href="#section-6.2-1.4.2.2" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-6.2-1.4.2.3">time<a href="#section-6.2-1.4.2.3" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-6.2-1.4.2.4">knowledge<a href="#section-6.2-1.4.2.4" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-6.2-1.4.2.5">linking<a href="#section-6.2-1.4.2.5" class="pilcrow">¶</a>
+</li>
+            </ul>
+</li>
+        </ul>
 </section>
 </div>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-6">
+<section id="section-7">
       <h2 id="name-security-considerations">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-6-1.1">Requirements for supporting algorithms<a href="#section-6-1.1" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-6-1.2">Application interface for verification<a href="#section-6-1.2" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-6-1.3">Data minimization of the protected header<a href="#section-6-1.3" class="pilcrow">¶</a>
+<li class="normal" id="section-7-1.1">Protected Header Minimization<a href="#section-7-1.1" class="pilcrow">¶</a>
 </li>
       </ul>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-7">
+<section id="section-8">
       <h2 id="name-iana-considerations">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-7-1">This document has no IANA actions.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">This document has no IANA actions.<a href="#section-8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<section id="section-8">
+<section id="section-9">
       <h2 id="name-normative-references">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
 <dt id="RFC2119">[RFC2119]</dt>
-      <dd>
-<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC7519">[RFC7519]</dt>
     <dd>
-<span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Bradley, J.</span>, and <span class="refAuthor">N. Sakimura</span>, <span class="refTitle">"JSON Web Token (JWT)"</span>, <span class="seriesInfo">RFC 7519</span>, <span class="seriesInfo">DOI 10.17487/RFC7519</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7519">https://www.rfc-editor.org/info/rfc7519</a>&gt;</span>. </dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
-<section id="section-9">
+<section id="section-10">
       <h2 id="name-informative-references">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
       </h2>
 <dl class="references">
-<dt id="RFC7515">[RFC7515]</dt>
-      <dd>
-<span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Bradley, J.</span>, and <span class="refAuthor">N. Sakimura</span>, <span class="refTitle">"JSON Web Signature (JWS)"</span>, <span class="seriesInfo">RFC 7515</span>, <span class="seriesInfo">DOI 10.17487/RFC7515</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7515">https://www.rfc-editor.org/info/rfc7515</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC7516">[RFC7516]</dt>
-      <dd>
-<span class="refAuthor">Jones, M.</span> and <span class="refAuthor">J. Hildebrand</span>, <span class="refTitle">"JSON Web Encryption (JWE)"</span>, <span class="seriesInfo">RFC 7516</span>, <span class="seriesInfo">DOI 10.17487/RFC7516</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7516">https://www.rfc-editor.org/info/rfc7516</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC7518">[RFC7518]</dt>
-      <dd>
-<span class="refAuthor">Jones, M.</span>, <span class="refTitle">"JSON Web Algorithms (JWA)"</span>, <span class="seriesInfo">RFC 7518</span>, <span class="seriesInfo">DOI 10.17487/RFC7518</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7518">https://www.rfc-editor.org/info/rfc7518</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
     <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
@@ -1347,8 +1340,8 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 </section>
 <div id="authors-addresses">
 <section id="appendix-A">
-      <h2 id="name-authors-addresses">
-<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
       </h2>
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Jeremie Miller</span></div>
@@ -1356,14 +1349,6 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <div class="email">
 <span>Email:</span>
 <a href="mailto:jmiller@pingidentity.com" class="email">jmiller@pingidentity.com</a>
-</div>
-</address>
-<address class="vcard">
-        <div dir="auto" class="left"><span class="fn nameRole">David Waite</span></div>
-<div dir="auto" class="left"><span class="org">Ping Identity</span></div>
-<div class="email">
-<span>Email:</span>
-<a href="mailto:dwaite+jwp@pingidentity.com" class="email">dwaite+jwp@pingidentity.com</a>
 </div>
 </address>
 </section>
