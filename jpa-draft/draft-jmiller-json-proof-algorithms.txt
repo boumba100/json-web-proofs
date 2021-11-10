@@ -4,7 +4,7 @@
 
 todo                                                           J. Miller
                                                            Ping Identity
-                                                         9 November 2021
+                                                        10 November 2021
 
 
                          JSON Proof Algorithms
@@ -22,7 +22,7 @@ Table of Contents
    1.  Introduction
    2.  Conventions and Definitions
    3.  Background
-   4.  Algorithm Basics
+   4.  Fundamental Interactions
      4.1.  Sign
      4.2.  Verify Signature
      4.3.  Prove
@@ -51,34 +51,32 @@ Table of Contents
 
 3.  Background
 
-   JWP defines a clean abstraction around the parts of a container
-   binding together a protected header and one or more payloads.  It
-   does not define any details about the interactions between an
-   application and the cryptographic libraries that implement proof-
-   supporting algorithms.
+   JWP defines a container that binds together a JSON protected header
+   with one or more opaque payloads and a cryptographically generated
+   proof value.  It does not specify the details necessary to implement
+   a proof-supporting algorithm (JPA) or suggest how applications
+   interact with JPA library interfaces.
 
-   Due to the nature of ZKPs, this specification also documents the
-   subtle but important differences in proof algorithms versus those
-   defined by the JSON Web Algorithms RFC.  These changes help support
-   more advanced capabilities such as blinded signatures and predicate
-   proofs.
+   This specification also documents the subtle but important
+   differences inherent in ZKP-based JPAs versus those defined by the
+   JSON Web Algorithms RFC.  These changes help support more advanced
+   capabilities such as blinded signatures and predicate proofs.
 
-4.  Algorithm Basics
+4.  Fundamental Interactions
 
-   The four principle interactions that every proof algorithm MUST
-   support are [sign](#sign), [verify_signature](#verify-signature),
+   The four principle interactions that every JPA MUST support are
+   [sign](#sign), [verify_signature](#verify-signature),
    [prove](#prove), and [verify_proof](#verify-proof).
 
-   Some algorithms MAY also support two additional interactions of
+   Some JPAs MAY also support two additional interactions of
    [request_signature](#request-signature) and [request_proof](#request-
    proof).  While these do not use a JWP container as input or output,
    they are included here in order to maximize interoperability across
-   proof algorithm implementations.
+   JPA implementations.
 
 4.1.  Sign
 
-   The JWP is first created as the output of a proof algorithm's sign
-   operation.
+   The JWP is first created as the output of a JPA's sign operation.
 
    TODO:
 
@@ -87,12 +85,11 @@ Table of Contents
    *  MUST support one or more payloads, each as an octet string
 
    *  MAY support the output of the request_signature operation from the
-      requesting party
+      requesting party (for blinded payloads)
 
-   *  MAY support signing hidden payloads with no octet string
+   *  MUST include integrity protection for the header and all payloads
 
-   *  MUST include integrity protection for the header and all payloads,
-      specify all digest and hash2curve methods
+   *  MUST specify all digest and hash2curve methods used
 
 4.2.  Verify Signature
 
@@ -100,12 +97,16 @@ Table of Contents
 
    TODO:
 
-   *  MAY support local state from the request_signature operation
+   *  MAY support local/cached private state from the request_signature
+      operation (the blinded payloads)
 
    *  MAY return a modified JWP for serialized storage without the local
-      state
+      state (with the payloads unblinded)
 
-   *  MAY support verifying any hidden payloads
+   *  MUST fully verify the proof value against the protected header and
+      all payloads
+
+   *  MUST fail if given a proven JWP
 
 4.3.  Prove
 
@@ -115,13 +116,12 @@ Table of Contents
    TODO:
 
    *  MAY support the output of the request_proof operation from the
-      requesting party
+      requesting party (for predicate proofs and verifiable computation
+      requests)
 
    *  MUST support ability to hide any payload
 
    *  MUST always include the protected header
-
-   *  MAY add/append new payloads
 
    *  MAY replace the proof value
 
@@ -149,6 +149,8 @@ Table of Contents
       verified assertions (may also be part of the request proof state)
 
    *  MAY indicate if the JWP can be re-used to generate a new proof
+
+   *  MUST fail if given only a signed JWP
 
 4.5.  Request Signature
 
