@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-11-07T00:39:57.055261+00:00",
+  "timestamp": "2021-11-11T00:38:52.450025+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -357,15 +357,15 @@
       "id": "I_kwDOFsQObc48mHvc",
       "title": "Naming Things",
       "url": "https://github.com/json-web-proofs/json-web-proofs/issues/13",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "quartzjer",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Using this issue to resolve outstanding naming discussions:\r\n- [ ] derive proof vs. generate proof\r\n- [ ] signing vs. generate proof\r\n- [ ] JSDT (JSON Selective Disclosure Token) vs ??? for companion spec to JWP",
       "createdAt": "2021-10-05T17:59:46Z",
-      "updatedAt": "2021-10-20T23:55:26Z",
-      "closedAt": null,
+      "updatedAt": "2021-11-09T22:46:58Z",
+      "closedAt": "2021-11-09T22:46:58Z",
       "comments": [
         {
           "author": "quartzjer",
@@ -387,6 +387,13 @@
           "body": "I started going with the following abbreviation pattern:\r\n* **JWP**: JSON Web Proofs (core container definition)\r\n* **JPA**: JSON Proof Algorithms (requirements for and definitions of proof algorithms)\r\n* **JPT**: JSON Proof Tokens  (a near-analogue of JWT, a specific application of JWPs)\r\n\r\nThe analogs also hold true for the CBOR versions of all three, **CWP**, **CPA**, and **CPT**.  ",
           "createdAt": "2021-10-20T23:55:26Z",
           "updatedAt": "2021-10-20T23:55:26Z"
+        },
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "There's been no objections to the introduction of these this past month so I'm going to close this issue, we can re-open it should any arise.",
+          "createdAt": "2021-11-09T22:46:58Z",
+          "updatedAt": "2021-11-09T22:46:58Z"
         }
       ]
     },
@@ -434,6 +441,132 @@
           "updatedAt": "2021-10-21T18:06:41Z"
         }
       ]
+    },
+    {
+      "number": 17,
+      "id": "I_kwDOFsQObc4-iIVO",
+      "title": "There's a distinction between knowing how to disclose a claim as a mechanical process and full understanding the semantics of a claim",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/17",
+      "state": "OPEN",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "selfissued"
+      ],
+      "labels": [
+        "JPT"
+      ],
+      "body": "Per the discussion on the 2-Nov-21 DIF JWP call, we need clearer language than \"understood\".  \r\n\r\n_Originally posted by @selfissued in https://github.com/json-web-proofs/json-web-proofs/pull/16#discussion_r741375561_",
+      "createdAt": "2021-11-09T21:22:49Z",
+      "updatedAt": "2021-11-09T22:01:37Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We will definitely need exacting language here.\r\n\r\nWhile there is expected to be an informed consent process with the (or _a_) subject for the contained claims, we can probably agree that it's not feasible to try and make that a requirement here.  (I'd still like to have some non-normative text or `SHOULD`s along these lines though if we can work it in)\r\n\r\nThe *bare* mechanical process of which claims are disclosed is essentially built in by just choosing which payloads to include whether its known which claim they are for or not, this is essentially just a basic JWP though.  The mapping for which claim is which payload is defined in the layout.  My position is that all payloads MUST have an associated claim mapping in that layout.  There should NOT be any payloads included in a JPT that aren't accessible as a claim.\r\n\r\nThe second mechanical process would be simply the association from a claim name in the layout to the given payload for its value.  I think the crux of this issue is here, is there use-cases where the application may not semantically understand the claim name but would still want to disclose it?\r\n\r\nMy instinct is that that situation doesn't make sense, that without knowing what the claim is, what reason would there be to include it?  My logic is circular though: if the application has a requirement to include the claim, that _is_ a semantic understanding of it.\r\n\r\nI can imagine one intermediate case where a claim is some unknown descendent key/value of a known parent structure.  There's only a limited semantic understanding here - it's \"a property of a known structure\" but is still unknown itself.  Perhaps the issuer is maximizing flexibility by allowing lots of detailed disclosure, but the disclosing application is very simple and only supports a high level.  The disclosing application still knows those properties are descendants of known understood ones, so I would suggest that qualifies as a semantic understanding requirement.\r\n\r\nIs there other use-cases? Or perhaps I'm just extolling my understanding of the word \"semantics\" in this context :)\r\n",
+          "createdAt": "2021-11-09T22:01:28Z",
+          "updatedAt": "2021-11-09T22:01:28Z"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "id": "I_kwDOFsQObc4-iQBj",
+      "title": "You might want to encode `lyt` by reference instead of by value.",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/18",
+      "state": "OPEN",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "JPT"
+      ],
+      "body": "Consider a commitment to salted hash (lyt)... etc... it might be that there are really large potential space savings for large \"payload types\"... when you don't need to keep repeating the payload structure in the header or the key... btw this is what linked data contexts are supposed to help you do... maybe they didn't solve the problem the best way... but imo its still worth considering the concept of an `lyt` registry... since someone will create that, regardless of what we want.\r\n\r\n_Originally posted by @OR13 in https://github.com/json-web-proofs/json-web-proofs/pull/16#discussion_r741400199_",
+      "createdAt": "2021-11-09T22:05:36Z",
+      "updatedAt": "2021-11-09T22:45:13Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I completely understand your comments here, I'm not in love with the coupled jwk-lyt approach either so hopefully we can find a happier path without adding too much complexity.  Consider it a starting point :)\r\n\r\nHere are the challenges related to this that I've been considering:\r\n* A JWP cannot be validated without the public key data, and similarly a JPT cannot be validated without the layout data\r\n* If the public key is not known by application context, the standard mechanism to resolve it is via the [`kid`](https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.4) in the protected header that can be used to match the `kid` in a JWK\r\n* JWTs add the [`iss`](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1) property to also define the specific issuer context\r\n* These \"resolution\" processes are typically defined by higher level protocols such as OpenID Connect and remain very open ended in the JOSE specs\r\n* If we add another parallel method such as `lid` that could create adoption challenges forcing other protocols to extend their resolution processes\r\n* It could also possibly double the number of round-trips for a verification requirement in some scenarios\r\n* Some JWP algorithms require public parameters for each payload slot, which also results in per-credential-type JWKs\r\n* If the wrong public key is resolved the validation fails, if the wrong layout is resolved is there new/unknown attack vectors?\r\n* JWKs are already specified to support multiple instances for the same public key data, each with additional context such as [`use`](https://datatracker.ietf.org/doc/html/rfc7517#section-4.2) defined, even if not used widely the intent is still inherently designed in\r\n* We don't have to require that the layout MUST be embedded in the JWK, only that such a method is available and well defined\r\n\r\n",
+          "createdAt": "2021-11-09T22:45:13Z",
+          "updatedAt": "2021-11-09T22:45:13Z"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "id": "I_kwDOFsQObc4-mpxK",
+      "title": "Define how JOSE registered header parameters apply to a JWP",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/19",
+      "state": "OPEN",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "JWP"
+      ],
+      "body": "For example, all of the ones defined in [JWS](https://datatracker.ietf.org/doc/html/rfc7515) apply the same, except `cty` should be documented as not recommended.",
+      "createdAt": "2021-11-10T21:20:36Z",
+      "updatedAt": "2021-11-10T21:20:36Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 20,
+      "id": "I_kwDOFsQObc4-mq-4",
+      "title": "Introduce JPA and JPT inside of the JWP draft",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/20",
+      "state": "OPEN",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "JWP"
+      ],
+      "body": "Create cross-linkable sections for terminology, such as \"JWP Protected Header\", etc.  Refer to existing JOSE definitions such as \"collision resistant names\" also.",
+      "createdAt": "2021-11-10T21:27:20Z",
+      "updatedAt": "2021-11-10T21:27:20Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 21,
+      "id": "I_kwDOFsQObc4-m3ZS",
+      "title": "Move JPA request parts to subsections",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/21",
+      "state": "OPEN",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "JPA"
+      ],
+      "body": "Also add recommendation that algorithms support a single octet string serialization for higher level protocols.",
+      "createdAt": "2021-11-10T22:36:05Z",
+      "updatedAt": "2021-11-10T22:36:05Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 22,
+      "id": "I_kwDOFsQObc4-m3hk",
+      "title": "Document known algorithm features",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/22",
+      "state": "OPEN",
+      "author": "quartzjer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "JPA"
+      ],
+      "body": "* range proof\r\n* equivalence\r\n* blind signatures\r\n* PoK\r\n* set (non-)membership\r\n\r\netc...",
+      "createdAt": "2021-11-10T22:37:04Z",
+      "updatedAt": "2021-11-10T22:37:04Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
