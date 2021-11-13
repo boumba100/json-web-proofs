@@ -4,7 +4,9 @@
 
 todo                                                           J. Miller
                                                            Ping Identity
-                                                         5 November 2021
+                                                                M. Jones
+                                                               Microsoft
+                                                        13 November 2021
 
 
                          JSON Proof Algorithms
@@ -29,17 +31,23 @@ Table of Contents
      4.4.  Verify Proof
      4.5.  Request Signature
      4.6.  Request Proof
-   5.  Security Considerations
-   6.  IANA Considerations
-   7.  Normative References
-   8.  Informative References
-   Author's Address
+   5.  Algorithm Specifications
+     5.1.  One-Time Use with ES256
+     5.2.  BBS-BLS12
+     5.3.  ZKSnark
+   6.  Security Considerations
+   7.  IANA Considerations
+     7.1.  JWP Algorithms Registry
+   8.  Normative References
+   9.  Informative References
+   Appendix A.  Acknowledgements
+   Authors' Addresses
 
 1.  Introduction
 
    The JSON Web Proof (JWP) draft establishes a new secure container
    format that supports selective disclosure and unlinkability using
-   Zero-Knowledge Proofs (ZKPs) or other newer cryptographic algorithms.
+   Zero-Knowledge Proofs (ZKPs) or other cryptographic algorithms.
 
 2.  Conventions and Definitions
 
@@ -51,21 +59,20 @@ Table of Contents
 
 3.  Background
 
-   JWP defines a clean abstraction around the parts of a container
-   binding together a protected header and one or more payloads.  It
-   does not define any details about the interactions between an
-   application and the cryptographic libraries that implement proof-
-   supporting algorithms.
+   JWP defines a container binding together a protected header, one or
+   more payloads, and a cryptographic proof.  It does not define any
+   details about the interactions between an application and the
+   cryptographic libraries that implement proof-supporting algorithms.
 
    Due to the nature of ZKPs, this specification also documents the
    subtle but important differences in proof algorithms versus those
-   defined by the JSON Web Algorithms RFC.  These changes help support
-   more advanced capabilities such as blinded signatures and predicate
-   proofs.
+   defined by the JSON Web Algorithms RFC.  These differences help
+   support more advanced capabilities such as blinded signatures and
+   predicate proofs.
 
 4.  Algorithm Basics
 
-   The four principle interactions that every proof algorithm MUST
+   The four principal interactions that every proof algorithm MUST
    support are [sign](#sign), [verify_signature](#verify-signature),
    [prove](#prove), and [verify_proof](#verify-proof).
 
@@ -96,7 +103,7 @@ Table of Contents
 
 4.2.  Verify Signature
 
-   Performed by the requesting party to verify the newly signed JWP.
+   Performed by the requesting party to verify the signed JWP.
 
    TODO:
 
@@ -109,7 +116,7 @@ Table of Contents
 
 4.3.  Prove
 
-   Used to apply any selective disclosure preferences and perform any
+   Used to apply any selective disclosure choices and perform any
    unlinkability transformations.
 
    TODO:
@@ -145,10 +152,10 @@ Table of Contents
 
    *  MAY support local state from the request_proof operation
 
-   *  Out of scope is app interface to interact with the resulting
-      verified assertions (may also be part of the request proof state)
+   *  App interface to interact with the resulting verified assertions
+      is out of scope (may also be part of the request proof state)
 
-   *  MAY indicate if the JWP can be re-used to generate a new proof
+   *  SHOULD indicate if the JWP can be re-used to generate a new proof
 
 4.5.  Request Signature
 
@@ -158,32 +165,64 @@ Table of Contents
 
    TODO
 
-5.  Security Considerations
+5.  Algorithm Specifications
+
+   This section defines how to use specific algorithms for JWPs.
+
+5.1.  One-Time Use with ES256
+
+   TBD
+
+5.2.  BBS-BLS12
+
+   TBD
+
+5.3.  ZKSnark
+
+   TBD
+
+6.  Security Considerations
 
    *  Data minimization of the proof value
 
    *  Unlinkability
 
-6.  IANA Considerations
+7.  IANA Considerations
 
-   This document has no IANA actions.
+7.1.  JWP Algorithms Registry
 
-7.  Normative References
+   This section establishes the IANA JWP Algorithms Registry.  It also
+   registers the following algorithms.
+
+   TBD
+
+8.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-8.  Informative References
+9.  Informative References
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
-Author's Address
+Appendix A.  Acknowledgements
+
+   TBD
+
+Authors' Addresses
 
    Jeremie Miller
    Ping Identity
 
    Email: jmiller@pingidentity.com
+
+
+   Michael B. Jones
+   Microsoft
+
+   Email: mbj@microsoft.com
+   URI:   https://self-issued.info/
