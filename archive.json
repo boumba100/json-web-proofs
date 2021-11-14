@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-11-11T00:38:52.450025+00:00",
+  "timestamp": "2021-11-14T00:40:04.834584+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -510,9 +510,17 @@
       ],
       "body": "For example, all of the ones defined in [JWS](https://datatracker.ietf.org/doc/html/rfc7515) apply the same, except `cty` should be documented as not recommended.",
       "createdAt": "2021-11-10T21:20:36Z",
-      "updatedAt": "2021-11-10T21:20:36Z",
+      "updatedAt": "2021-11-11T19:55:09Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "selfissued",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I agree that we need to do this analysis.",
+          "createdAt": "2021-11-11T19:55:09Z",
+          "updatedAt": "2021-11-11T19:55:09Z"
+        }
+      ]
     },
     {
       "number": 20,
@@ -564,7 +572,71 @@
       ],
       "body": "* range proof\r\n* equivalence\r\n* blind signatures\r\n* PoK\r\n* set (non-)membership\r\n\r\netc...",
       "createdAt": "2021-11-10T22:37:04Z",
-      "updatedAt": "2021-11-10T22:37:04Z",
+      "updatedAt": "2021-11-12T22:27:59Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "boumba100",
+          "authorAssociation": "NONE",
+          "body": "From what I understand, the JWP (JSON Web Proof) spec is meant to define a container format for zero knowledge proofs, like how JWS/JWT does for digital signatures. \r\n\r\nSince ZKPs can be used for many different things (as mentioned above), I am just wondering what type of ZKPs are in the scope of the spec. \r\n\r\nIs it that the spec will support all types of zero-knowledge proofs (range proofs, (non-)membership proofs, etc...) for the signed messages? Or is it just concerned about proof that data is authentic (signed by some party)? For example, a JWP could include a proof of knowledge of a signature, a proof of knowledge of the hidden messages, and proof that the hidden messages are related to the signature. With this narrower scope, proofs that are not needed to verify the authenticity of the payload would not be part of a JWP, but could instead be attached (e.g., via proof of equality) as another proof. \r\n\r\n \r\n\r\nLet me know if there are any thoughts on this. \r\n\r\n \r\n\r\nDisclaimer: We recently joined DIF, and I am trying to catch up on everything by going through the repo:) \r\n\r\n \r\n\r\nNoah ",
+          "createdAt": "2021-11-12T22:27:59Z",
+          "updatedAt": "2021-11-12T22:27:59Z"
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOFsQObc4-qdEE",
+      "title": "Define what the JWK Thumbprint is of a JWK with layout information",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/23",
+      "state": "OPEN",
+      "author": "selfissued",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Given we're proposing to add additional information to the JWKs we use, I believe that we need to define how this additional information is used or not used by JWK Thumbprints (https://www.rfc-editor.org/rfc/rfc7638.html).  I would propose that the additional members be ignored, just as other information such as \"use\", etc. are ignored, since they are not \"required members\".",
+      "createdAt": "2021-11-11T20:02:09Z",
+      "updatedAt": "2021-11-11T21:06:54Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "\ud83d\udc4d, agree they are ignored, the thumbprint will be the same for the same underlying key material.",
+          "createdAt": "2021-11-11T21:06:40Z",
+          "updatedAt": "2021-11-11T21:06:54Z"
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "id": "I_kwDOFsQObc4-u7c2",
+      "title": "Indirect references in layouts seem inconsistent with being URL-safe",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/26",
+      "state": "OPEN",
+      "author": "selfissued",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "JTPs are URL-safe but allowing binary portions of them via indirect references seems inconsistent.  Or was the intent that the payload be the base64url-encoded representation of the binary indirectly referenced object, such as a an object with media type `image/jpeg`?  If so, this language needs to be clarified.",
+      "createdAt": "2021-11-13T00:07:25Z",
+      "updatedAt": "2021-11-13T00:07:25Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 27,
+      "id": "I_kwDOFsQObc4-u7n8",
+      "title": "Payloads can be predicates - not just claims",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/issues/27",
+      "state": "OPEN",
+      "author": "selfissued",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "There are a number of places in the current drafts where we say that predicates represent claims but we fail to say that they can also represent predicates.  We should develop consistent language for describing both and uniformly use it.",
+      "createdAt": "2021-11-13T00:09:37Z",
+      "updatedAt": "2021-11-13T00:09:37Z",
       "closedAt": null,
       "comments": []
     }
@@ -1775,6 +1847,90 @@
               "updatedAt": "2021-11-02T19:26:21Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "id": "PR_kwDOFsQObc4uc5KV",
+      "title": "Create README.md",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/pull/24",
+      "state": "MERGED",
+      "author": "dwaite",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Repo readme for setting expectations and linking to current draft renders",
+      "createdAt": "2021-11-12T11:38:57Z",
+      "updatedAt": "2021-11-12T21:47:11Z",
+      "baseRepository": "json-web-proofs/json-web-proofs",
+      "baseRefName": "main",
+      "baseRefOid": "8ba77cf002287fd9d27ac3ef75e87047391ca5da",
+      "headRepository": "json-web-proofs/json-web-proofs",
+      "headRefName": "dwaite-readme",
+      "headRefOid": "5eee425adbde635fa4a45c8ac9e6732dba7d1cbe",
+      "closedAt": "2021-11-12T21:47:06Z",
+      "mergedAt": "2021-11-12T21:47:06Z",
+      "mergedBy": "dwaite",
+      "mergeCommit": {
+        "oid": "0e46e3fee79866bb43d7bee8d79975c5b2bcc583"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFsQObc4v--_p",
+          "commit": {
+            "abbreviatedOid": "5eee425"
+          },
+          "author": "selfissued",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Thanks for doing this, DW.  I particularly like having the links to the rendered drafts.",
+          "createdAt": "2021-11-12T17:10:40Z",
+          "updatedAt": "2021-11-12T17:10:40Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "id": "PR_kwDOFsQObc4ueXoS",
+      "title": "Clarifications to and expansions of all three specifications",
+      "url": "https://github.com/json-web-proofs/json-web-proofs/pull/25",
+      "state": "MERGED",
+      "author": "selfissued",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-11-12T20:45:25Z",
+      "updatedAt": "2021-11-13T22:10:46Z",
+      "baseRepository": "json-web-proofs/json-web-proofs",
+      "baseRefName": "main",
+      "baseRefOid": "8ba77cf002287fd9d27ac3ef75e87047391ca5da",
+      "headRepository": "selfissued/json-web-proofs",
+      "headRefName": "mbj-clarifications-and-expansions",
+      "headRefOid": "8263b74c1d8be8317d04a2088c575ee9e2898988",
+      "closedAt": "2021-11-13T22:10:46Z",
+      "mergedAt": "2021-11-13T22:10:45Z",
+      "mergedBy": "dwaite",
+      "mergeCommit": {
+        "oid": "ecd30242b04f9245e3c55babfe116ed8fde6724f"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFsQObc4v_0k9",
+          "commit": {
+            "abbreviatedOid": "d5addb8"
+          },
+          "author": "quartzjer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "So many excellent fixes, thank you!",
+          "createdAt": "2021-11-12T22:01:16Z",
+          "updatedAt": "2021-11-12T22:01:16Z",
+          "comments": []
         }
       ]
     }
