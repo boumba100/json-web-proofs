@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-11-14T00:40:04.834584+00:00",
+  "timestamp": "2021-11-16T00:39:29.504887+00:00",
   "repo": "json-web-proofs/json-web-proofs",
   "labels": [
     {
@@ -572,17 +572,9 @@
       ],
       "body": "* range proof\r\n* equivalence\r\n* blind signatures\r\n* PoK\r\n* set (non-)membership\r\n\r\netc...",
       "createdAt": "2021-11-10T22:37:04Z",
-      "updatedAt": "2021-11-12T22:27:59Z",
+      "updatedAt": "2021-11-15T17:11:18Z",
       "closedAt": null,
-      "comments": [
-        {
-          "author": "boumba100",
-          "authorAssociation": "NONE",
-          "body": "From what I understand, the JWP (JSON Web Proof) spec is meant to define a container format for zero knowledge proofs, like how JWS/JWT does for digital signatures. \r\n\r\nSince ZKPs can be used for many different things (as mentioned above), I am just wondering what type of ZKPs are in the scope of the spec. \r\n\r\nIs it that the spec will support all types of zero-knowledge proofs (range proofs, (non-)membership proofs, etc...) for the signed messages? Or is it just concerned about proof that data is authentic (signed by some party)? For example, a JWP could include a proof of knowledge of a signature, a proof of knowledge of the hidden messages, and proof that the hidden messages are related to the signature. With this narrower scope, proofs that are not needed to verify the authenticity of the payload would not be part of a JWP, but could instead be attached (e.g., via proof of equality) as another proof. \r\n\r\n \r\n\r\nLet me know if there are any thoughts on this. \r\n\r\n \r\n\r\nDisclaimer: We recently joined DIF, and I am trying to catch up on everything by going through the repo:) \r\n\r\n \r\n\r\nNoah ",
-          "createdAt": "2021-11-12T22:27:59Z",
-          "updatedAt": "2021-11-12T22:27:59Z"
-        }
-      ]
+      "comments": []
     },
     {
       "number": 23,
