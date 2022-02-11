@@ -32,6 +32,14 @@ organization = "Microsoft"
   email = "mbj@microsoft.com"
   uri = "https://self-issued.info/"
 
+[[author]]
+initials = "N."
+surname = "Bouma"
+fullname = "Noah Bouma"
+organization = "Interac"
+  [author.address]
+   email = "nbouma@interac.ca"
+
 %%%
 
 .# Abstract
@@ -341,6 +349,322 @@ The same JWP in compact serialization:
 ```
 ImV5SnBjM01pT2lKb2RIUndjem92TDJsemMzVmxjaTUwYkdRaUxDSmpiR0ZwYlhNaU9sc2labUZ0YVd4NVgyNWhiV1VpTENKbmFYWmxibDl1WVcxbElpd2laVzFoYVd3aUxDSmhaMlVpWFN3aWRIbHdJam9pU2xCVUlpd2lZV3huSWpvaVFrSlRMVmdpZlEi.~IkpheSI~~NDI.AAUVob_-LTy3HwjlCKC-YfzmudeeeX26URToBMlWdjjx7M_O0lIf5a_vBsFEDlDQzdtqpby3kzu6WtELGyynfqZlhM3PFiO1lHYspKM6ENP1hXOenlm2BZdlWxw7S-DPMEvcg0-8Oeukeqp4--ae5kmYimo9alrXfJ6zUgKJa2CCg9cZKfKSMJ5SPbmHrD_4lTK3AAAAdLO5sNYLoBjrnb2NIeF3BZKnr-O8pcTSnNikHKcgYdckeomtthHpRSkULEXL7OIY8gAAAAIAx_itfCF__U-qTZllqWRYvs43GBlQbNdQhoBGvvDRlEPKgrSRM0i8jLmOwfabDPhBDtFI-Hf6ey6ICL8trU19tEz9Cov0nIrilSlMMi3S50oSwFskmi6eTPMNd3przlvioBtQzmEgSiqbtInl0lDsAAAABAaPp152HQH8876wKi2v1bZRB_r0jYioG6RuZRy17ew2DEMsaLsh-Z-PaMzqAPtlT6rOcSzrPvL-i_zaSZswf4NPKYa6t673cGchg1Jz6STrDLOrRzeaVt1Nzqu-uh_AK1gALW3M2ZqEcV2msTMfdplYdC1xb7sHlta49MaV3l1l
 ```
+
+## ECDSA Vector Pedersen Commitment Extension
+
+The ECDSA Vector Pedersen Commitment Extension (EC+C) algorithm is based on creating a Pedersen Commitment on a vector of messages, and then signing it using a traditional ECDSA JSON Web Algorithm (section 3.4 in [@RFC7518]). In addition to giving a signer the ability to sign an array of messages, this algorithm also allows for a prover to selectively disclose signed messages and prove knowledge of the hidden ones. Moreover, due to the partial homomorphic encryption property of Pedersen Commitments, this algorithm could be further extended to support additional zero knowledge proofs such as range proofs, (non)membership proofs, and proofs, etc... 
+
+
+
+TODO: Add reference for SEC1
+
+### Messages
+
+The ECDSA Vector Pedersen Commitment Extension (EC+C) algorithm operates on an array of individual messages for signing and proof generation. Each message can be the one following types: 
+
+- JSON String 
+- JSON Number 
+- JSON Boolean 
+- Octet string 
+
+### Protected Header
+
+The UTF-8 octet string of the JWP Protected Header is the first message in the input array at index 0. 
+
+### Elliptic-Curve Pedersen Commitment
+
+### Notation
+
+The following notation is used in this document (inspired by section 3 of [@RFC8235]). 
+
+- a || b: concatenation of a and b 
+- H: a secure hash function 
+- hash_to_curve(data): a secure cryptographic hash function that takes an arbitrary octet string and returns a point on the curve E(Fp) as defined in [I-D.irtf-cfrg-hash-to-curve (TODO: Reference)] 
+- p: a large prime 
+- Fp: a finite field of p elements, where p is a prime 
+- E(Fp): an elliptic curve defined over Fp 
+- G: a generator of the subgroup over E(Fp) with prime order n 
+- G[i]: the generator to a given message 
+- G[0],...,G[L]: A list of generators 
+- n: the order of G 
+- P x [b]: multiplication of a point P with scalar b over E(Fp) 
+- P[0],...,P[L]: a list of points 
+- sum(P[0],...,P[L]): addition of all the points in an array, E.g., P[0] + P[1] + P[2] 
+- msg[0],...,msg[L]: a list of JSON values (String, Number or Boolean) 
+- s[0],...,s[L]: a list of scalars 
+
+### Derive Generators
+
+Inputs: 
+
+- PK: the octet string representation of a public key 
+- n: total number of messages 
+
+
+
+The generators (G[0],...G[n]) are computed as follows: 
+
+G[0] = hash_to_curve(PK) 
+
+G[1] = hash_to_curve(G[0]) 
+
+G[2] = hash_to_curve(G[1]) 
+
+G[3] = hash_to_curve(G[2]) 
+
+… 
+
+### Convert Message to Scalar
+
+The following describes how to convert a message value to a scalar: 
+
+- Number: Number mod n 
+- Boolean: if true: 1, else: 0 
+
+- String: H(ASCII(BASE64URL(value))) mod n 
+- Octet String: H(value) mod n 
+
+### Create Commitment
+
+Inputs: 
+
+- PK: the octet string representation of a public key 
+
+- msg[0],...,msg[L]: A list of JSON values (String, Number and Boolean). 
+
+- h: optional blinding factor from [1, n -1] 
+
+  
+
+1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators]. 
+
+2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar]. 
+
+3. If a blinding factor (h) is not provided, select a random one from [1, n-1]. 
+
+4. Append the blinding factor (h) to the list of scalars (s[0],...,s[L]) 
+
+5. Multiply each generator (G[i]) by its corresponding scalar (s[i]). P[i] = G x [s[i]]. 
+
+6. Add all the points (P[0],...,P[L]) together. C = sum(P[0],...,P[L]). 
+
+7. The final sum of the points (C) is the commitment value. 
+
+### Create Commitment Selective-Disclosure Proof
+
+The Commitment Selective-Disclosure Proof consists of a Schnorr Non-Interactive Zero-Knowledge Proof each for hidden message. 
+
+
+
+Inputs: 
+
+- PK: the octet string representation of a public key 
+- msg[0],...,msg[L]: a list of JSON values (String, Number and Boolean) that will remain hidden. 
+- h: blinding factor from [1, n -1] 
+- C: the commitment 
+- n: nonce octet sequence 
+
+1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators]. 
+
+2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
+
+3. Append the blinding factor (h) to the list of scalars (s[i],...,s[L]). 
+
+4. Select a random number[r[i]] from [1, n -1] for each scalar [s[i]]. 
+
+5. Multiply each generator (G[i]) by its corresponding random number(r[i]). R[i] = G[i] x r[i]. 
+
+6. Calculate the final commitment to randomness (T) by adding all the points (R[0],...,R[L]) that were generated in step 3 together. T = sum(R[0],...,R[L]). 
+
+7. Generate the challenge (c) by hashing the concatenation of the generators (G[0],...,G[L]), randomness commitment (T), commitment (C), and the nonce (n). C = H(G[0],...,G[L] || T || C || n). 
+
+8. For each hidden scalar (s[i]), generate the response (b[i]) by computing b[i] = r[i] - c * s[i]. 
+
+9. (T, [b[0],...,b[L]]) are the proof values. 
+
+### Verify Commitment Selective-Disclosure Proof
+
+Inputs: 
+
+- PK: the octet string representation of a public key 
+- msg[0],...,msg[L]: a list of revealed JSON values (String, Number and Boolean) 
+- C: the commitment 
+
+- T: the randomness commitment 
+- b[0],...,b[L]: the responses 
+- n: nonce octet sequence 
+
+1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators]. 
+
+2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
+
+3. Generate the challenge (c) as defined in step 7 of [@create-commitment-selective-disclosure-proof]. 
+
+4. Multiply each generator (G[i]) by its corresponding response (b[i]). P[i] = G[i] x b[i]. 
+
+5. Multiply each revealed scalar (s[i]) by its corresponding generator (G[i]). O[i] = G[i] x [s[i]]. 
+
+6. To verify, check T = sum(O[0],...,O[L]) + sum(P[0],...,P[L]) + C x [c]. 
+
+### Open Commitment
+
+Verify that a list of messages plus a blinding factor can open a commitment. 
+
+Inputs: 
+
+- PK: the octet string representation of a public key 
+- msg[0],...,msg[L]: A list of JSON values (String, Number and Boolean). 
+- h: blinding factor 
+
+- C: the commitment 
+
+  
+
+1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators].
+
+2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
+
+3. Append the blinding factor (h) to the list of scalars (s[0],...,s[L]). 
+
+4. Multiply each generator (G[i]) by its corresponding scalar (s[i]). P[i] = G x [s[i]]. 
+
+5. Add all the points (P[0],...,P[L]) together. C’ = sum(P[0],...,P[L]). 
+
+6. To verify, check C' = C 
+
+### Convert Commitment into Octet String
+
+Since an elliptic-curve based commitment is simply a point on an elliptic curve, a commitment can be represented by the two-integer values X and Y. 
+
+A commitment can be converted into an octet string representation as follows: 
+
+1. Turn X and Y into octet sequences using the Integer-to-OctetString Conversion defined in Section 2.3.7 of SEC1 [SEC1] (in big-endian octet order), with each array being of 32 bytes long. 
+
+2. Concatenate the two octet sequences in the order X and then Y. 
+
+3. The resulting octet sequence is the representation of the elliptic-curve based commitment. 
+
+### Convert Octet String into Commitment
+
+An octet string can be converted into an elliptic-curve based commitment as follows. 
+
+1. The octet string representation of the commitment MUST be a 64-octet sequence. If it is not a 64-octet sequence, the validation has failed. 
+
+2. Split the 64-octet sequence into two 32-octet sequences. The first sequence represents X and the second Y. 
+
+3. Convert the two octet sequences into integers using the Octet-String-to-Integer Conversion defined in Section 2.3.8 SEC1 [SEC1] 
+
+4. The resulting tuple (X, Y) is the commitment value. 
+
+### Convert Commitment Selective-Disclosure Proof into Octet String
+
+Inputs: 
+
+- C: the commitment 
+- T: the commitment to randomness 
+- b[0],...,b[L]: the responses 
+
+A commitment selective-disclosure proof can be converted into an octet string as follows: 
+
+1. Turn C and T into octet sequences using the method defined in [@convert-commitment-into-octet-string]. 
+
+2. Convert the number of responses (n) into a big-endian octet-sequence, with the array being 2 bytes long. 
+
+3. Convert all the responses into octet sequences using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of SEC1 [SEC1]. 
+
+4. Concatenate the octet sequences in order C, T, n, b[0],...,b[L]. 
+
+5. The resulting octet sequence is the representation of the proof. 
+
+### Convert Octet String into Commitment Selective-Disclosure Proof
+
+1. Split the octet-sequence into the following sequences: T (64 bytes), n (2 bytes), [b[0],...b[L]] \(32 * n bytes\). 
+
+2. Convert T into a commitment using the steps defined in [@convert-octet-string-into-commitment]. 
+
+4. Split the [b[0],...,b[L]] octet-sequence into n number of octet-sequences of 32 bytes long. 
+
+3. Convert the b[0],...,b[L] octet-sequences into field elements using Octet-String-to-Field-Element in Section 2.3.6 in SEC1 [SEC1]. 
+
+4. The resulting tuple (C, T, [b[0],...,b[L]]) is the proof value. 
+
+### Signing
+
+1. Create a vector commitment (C) for the list of messages (msg[0],...,msg[L]) as defined in [@create-commitment]. 
+
+2. Turn the commitment (C) value into an octet sequence as defined in [@convert-commitment-into-octet-string]. 
+
+3. Generate a signature (S) on the octet sequence using the selected ECDSA JWA algorithm. 
+
+4. Turn the blinding factor (h) generated in step 1 into an octet sequence in big-endian order using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of SEC1 [SEC1]. 
+
+5. Set the proof type identifier byte (I) to 1. 
+
+6. Concatenate the three octet sequences in the order I, S and then h. Note: C can be reconstructed if all the messages are known. 
+
+7. The resulting 97-octet sequence is the proof value. 
+
+### Proving
+
+1. The input proof value MUST be a 97-octet sequence. If it is not a 97-octet sequence, the validation has failed. 
+
+2. Split the 97-octet sequence into the following octet-sequences: 1-octet for the identifier (I), 64-octet sequence for the signature value (S), and 32-octet sequence for the blinding (h).  
+
+3. The identifier (I) value MUST be equal to 1. If the value is not equal to 1, the validation has failed. 
+
+4. Convert the blinding factor (h) octet-sequence into an integer as defined in Section 2.3.5 of SEC1 [SEC1]. 
+
+5. Reconstruct the commitment (C) using the full list of messages (msg[0],...,msg[L]) and the blinding factor (h). 
+
+6. Generate a commitment proof (V) as defined in [@create-commitment-selective-disclosure-proof]. 
+
+7. Convert the commitment proof (V) into an octet sequence as defined in [@convert-commitment-selective-disclosure-proof-into-octet-string]. 
+
+8. Set the proof type identifier byte (I) to 2. 
+
+9. Concatenate the two octet sequences in order I, S and then V. 
+
+10. The resulting octet sequence is the proof value. 
+
+### Verification
+
+#### Verify Root
+
+1. Extract the signature value (S) and reconstruct the commitment value (C) by executing steps 1 through 5 defined in [@proving]. 
+
+2. Turn the commitment (C) value into an octet sequence as defined in [@convert-commitment-into-octet-string]. 
+
+3. Verify the signature (S) against the octet sequence representation of the commitment value (C) using the selected ECDSA JWA algorithm. 
+
+#### Verify Proof
+
+1. The proof value MUST be an octet sequence of at least 194 bytes. If the octet sequence is less than 194 bytes, the validation has failed. 
+
+2. Split the octet sequence into 1 octet for the identifier (I), 64-octet sequence for the signature (S), and the rest of the sequence for the commitment proof (V). 
+
+3. The identifier (I) MUST be equal to 2. If it is not equal to 2, the validation has failed. 
+
+4. Decode the octet-sequence representation of the commitment proof (V) as defined in [@convert-octet-string-into-commitment-selective-disclosure-proof]. 
+
+5. Verify the octet sequence representation of the commitment (C) against the signature (S) using the selected ECDSA JWA algorithm. 
+
+6. Verify the commitment proof (V) as defined in [@verify-commitment-selective-disclosure-proof]. 
+
+### Algorithm Parameters
+
+The following table describes the algorithm parameters for each `alg` value.
+
+| `alg` Parameter Value | JWA   | Hash Function | Hash to Curve Function    | Curve |
+| --------------------- | ----- | ------------- | ------------------------- | ----- |
+| ES256+C               | ES256 | SHA256        | P256_XMD:SHA-256_SSWU_RO_ | P-256 |
+| ES384+C               | ES384 | SHA384        | P384_XMD:SHA-384_SSWU_RO_ | P-384 |
+| ES521+C               | E521  | SHA521        | P521_XMD:SHA-512_SSWU_RO_ | P-521 |
+
+
+
+### JPA Registration
+
+The proposed JWP `alg` value is of the format `+C` appended to the relevant ECDSA JWA `alg` value. For example, `+C` would be appended to ES256 and the resulting value would be `ES256+C`. 
 
 ## ZKSnark
 
