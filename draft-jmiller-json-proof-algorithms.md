@@ -356,7 +356,7 @@ The ECDSA Vector Pedersen Commitment Extension (EC+C) algorithm is based on crea
 
 
 
-TODO: Add reference for SEC1
+TODO: Properly reference for SEC1 (http://www.secg.org/sec1-v2.pdf) and https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-13
 
 ### Messages
 
@@ -379,7 +379,7 @@ The following notation is used in this document (inspired by section 3 of [@RFC8
 
 - a || b: concatenation of a and b 
 - H: a secure hash function 
-- hash_to_curve(data): a secure cryptographic hash function that takes an arbitrary octet string and returns a point on the curve E(Fp) as defined in [I-D.irtf-cfrg-hash-to-curve (TODO: Reference)] 
+- hash_to_curve(data): a secure cryptographic hash function that takes an arbitrary octet string and returns a point on the curve E(Fp) as defined in [I-D.irtf-cfrg-hash-to-curve] (https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-13) 
 - p: a large prime 
 - Fp: a finite field of p elements, where p is a prime 
 - E(Fp): an elliptic curve defined over Fp 
@@ -412,7 +412,7 @@ G[2] = hash_to_curve(G[1])
 
 G[3] = hash_to_curve(G[2]) 
 
-… 
+...
 
 ### Convert Message to Scalar
 
@@ -538,7 +538,7 @@ Since an elliptic-curve based commitment is simply a point on an elliptic curve,
 
 A commitment can be converted into an octet string representation as follows: 
 
-1. Turn X and Y into octet sequences using the Integer-to-OctetString Conversion defined in Section 2.3.7 of SEC1 [SEC1] (in big-endian octet order), with each array being of 32 bytes long. 
+1. Turn X and Y into octet sequences using the Integer-to-OctetString Conversion defined in Section 2.3.7 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1) (in big-endian octet order), with each array being of 32 bytes long. 
 
 2. Concatenate the two octet sequences in the order X and then Y. 
 
@@ -552,7 +552,7 @@ An octet string can be converted into an elliptic-curve based commitment as foll
 
 2. Split the 64-octet sequence into two 32-octet sequences. The first sequence represents X and the second Y. 
 
-3. Convert the two octet sequences into integers using the Octet-String-to-Integer Conversion defined in Section 2.3.8 SEC1 [SEC1] 
+3. Convert the two octet sequences into integers using the Octet-String-to-Integer Conversion defined in Section 2.3.8 [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1)
 
 4. The resulting tuple (X, Y) is the commitment value. 
 
@@ -570,7 +570,7 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 2. Convert the number of responses (n) into a big-endian octet-sequence, with the array being 2 bytes long. 
 
-3. Convert all the responses into octet sequences using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of SEC1 [SEC1]. 
+3. Convert all the responses into octet sequences using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
 4. Concatenate the octet sequences in order C, T, n, b[0],...,b[L]. 
 
@@ -584,7 +584,7 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 4. Split the [b[0],...,b[L]] octet-sequence into n number of octet-sequences of 32 bytes long. 
 
-3. Convert the b[0],...,b[L] octet-sequences into field elements using Octet-String-to-Field-Element in Section 2.3.6 in SEC1 [SEC1]. 
+3. Convert the b[0],...,b[L] octet-sequences into field elements using Octet-String-to-Field-Element in Section 2.3.6 in [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
 4. The resulting tuple (C, T, [b[0],...,b[L]]) is the proof value. 
 
@@ -596,7 +596,7 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 3. Generate a signature (S) on the octet sequence using the selected ECDSA JWA algorithm. 
 
-4. Turn the blinding factor (h) generated in step 1 into an octet sequence in big-endian order using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of SEC1 [SEC1]. 
+4. Turn the blinding factor (h) generated in step 1 into an octet sequence in big-endian order using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
 5. Set the proof type identifier byte (I) to 1. 
 
@@ -612,7 +612,7 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 3. The identifier (I) value MUST be equal to 1. If the value is not equal to 1, the validation has failed. 
 
-4. Convert the blinding factor (h) octet-sequence into an integer as defined in Section 2.3.5 of SEC1 [SEC1]. 
+4. Convert the blinding factor (h) octet-sequence into an integer as defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
 5. Reconstruct the commitment (C) using the full list of messages (msg[0],...,msg[L]) and the blinding factor (h). 
 
