@@ -494,17 +494,7 @@ Inputs:
 - b[0],...,b[L]: the responses 
 - n: nonce octet sequence 
 
-1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators]. 
-
-2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
-
-3. Generate the challenge (c) as defined in step 7 of [@create-commitment-selective-disclosure-proof]. 
-
-4. Multiply each generator (G[i]) by its corresponding response (b[i]). P[i] = G[i] x b[i]. 
-
-5. Multiply each revealed scalar (s[i]) by its corresponding generator (G[i]). O[i] = G[i] x [s[i]]. 
-
-6. To verify, check T = sum(O[0],...,O[L]) + sum(P[0],...,P[L]) + C x [c]. 
+TODO
 
 ### Open Commitment
 
