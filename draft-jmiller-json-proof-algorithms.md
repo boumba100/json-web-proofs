@@ -464,23 +464,7 @@ Inputs:
 - C: the commitment 
 - n: nonce octet sequence 
 
-1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators]. 
-
-2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
-
-3. Append the blinding factor (h) to the list of scalars (s[i],...,s[L]). 
-
-4. Select a random number[r[i]] from [1, n -1] for each scalar [s[i]]. 
-
-5. Multiply each generator (G[i]) by its corresponding random number(r[i]). R[i] = G[i] x r[i]. 
-
-6. Calculate the final commitment to randomness (T) by adding all the points (R[0],...,R[L]) that were generated in step 3 together. T = sum(R[0],...,R[L]). 
-
-7. Generate the challenge (c) by hashing the concatenation of the generators (G[0],...,G[L]), randomness commitment (T), commitment (C), and the nonce (n). C = H(G[0],...,G[L] || T || C || n). 
-
-8. For each hidden scalar (s[i]), generate the response (b[i]) by computing b[i] = r[i] - c * s[i]. 
-
-9. (T, [b[0],...,b[L]]) are the proof values. 
+TODO
 
 ### Verify Commitment Selective-Disclosure Proof
 
@@ -494,7 +478,7 @@ Inputs:
 - b[0],...,b[L]: the responses 
 - n: nonce octet sequence 
 
-TODO
+
 
 ### Open Commitment
 
