@@ -434,11 +434,13 @@ Inputs:
 
 - h: optional blinding factor from [1, n -1] 
 
+- (G[0],...,G[L]): An optional list of generators
+
   
 
-1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators]. 
+1. If generators  (G[0],...,G[L]) have not been provided, derive a set for the total number of messages + 1 (n) as defined in [@derive-generators]. 
 
-2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar]. 
+2. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar]. 
 
 3. If a blinding factor (h) is not provided, select a random one from [1, n-1]. 
 
@@ -462,9 +464,20 @@ Inputs:
 - msg[0],...,msg[L]: a list of JSON values (String, Number and Boolean) that will remain hidden. 
 - h: blinding factor from [1, n -1] 
 - C: the commitment 
-- n: nonce octet sequence 
+- nonce: nonce octet sequence 
+  
 
-TODO
+1. Derive a set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators].
+2. Omit the generators from the set (G[0],...,G[L]) that don't have a corresponding hidden message (msg[i]) or blinding factor (at the last index).
+3. Create the proof commitment (PC) from the generators (G[0],...,G[l]), the messages (msg[0],...msg[L]) and the blinding factor (h) by following the steps defined in [@create-commitment].
+4. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars  (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
+5. Append the blinding factor (h) to the list of scalars (s[i],...,s[L]).
+6. Select a random number[r[i]] from [1, n -1] for each scalar [s[i]].
+7. For each scalar (r[i]), multiply its corresponding generator (generated in step 1) by its corresponding random number [r[i]]. R[i] = G[i] x r[i]
+8. Calculate the final commitment to randomness (T) by adding all the  points (R[0],...,R[L]) that were generated in step 3 together. T =  sum(R[0],...,R[L]).
+9. Generate the challenge (c) by hashing the concatenation of the generators (G[0],...,G[L]), the randomness commitment (T), the proof commitment (PC),  and the nonce . C = H(G[0],...,G[L] || T || PC || nonce).
+10. For each hidden scalar (s[i]), generate the response (b[i]) by computing b[i] = r[i] - c * s[i].
+11. The following tuple is the proof value: (PC, T, [b[0],...,b[L]).
 
 ### Verify Commitment Selective-Disclosure Proof
 
@@ -473,12 +486,22 @@ Inputs:
 - PK: the octet string representation of a public key 
 - msg[0],...,msg[L]: a list of revealed JSON values (String, Number and Boolean) 
 - C: the commitment 
-
+- PC: the proof commitment
 - T: the randomness commitment 
 - b[0],...,b[L]: the responses 
-- n: nonce octet sequence 
+- nonce: an octet sequence 
 
 
+
+1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators].
+2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
+3. Generate the challenge (c) as defined in step 7 of [@create-commitment-selective-disclosure-proof].
+4. Multiply each response [b[i]] by its corresponding generator (G[i]). P[i] =  G[i] x b[i].
+5. To verify, check T = sum(P[0],...P[L]) + PC x [c].
+6. Multiply each revealed scalar (s[i]) by its corresponding generator (G[i]). O[i] = G[i] x [s[i]].
+7. Reconstruct the original commitment (C). C = sum(P[0],...P[L]) + sum(O[i],...O[L])
+
+### 
 
 ### Open Commitment
 
@@ -487,7 +510,9 @@ Verify that a list of messages plus a blinding factor can open a commitment.
 Inputs: 
 
 - PK: the octet string representation of a public key 
+
 - msg[0],...,msg[L]: A list of JSON values (String, Number and Boolean). 
+
 - h: blinding factor 
 
 - C: the commitment 
@@ -496,7 +521,7 @@ Inputs:
 
 1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators].
 
-2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
+2. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
 
 3. Append the blinding factor (h) to the list of scalars (s[0],...,s[L]). 
 
@@ -528,31 +553,31 @@ An octet string can be converted into an elliptic-curve based commitment as foll
 
 3. Convert the two octet sequences into integers using the Octet-String-to-Integer Conversion defined in Section 2.3.8 [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1)
 
-4. The resulting tuple (X, Y) is the commitment value. 
+4. The following tuple is the commitment value: (X, Y). 
 
 ### Convert Commitment Selective-Disclosure Proof into Octet String
 
 Inputs: 
 
-- C: the commitment 
+- PC: the proof commitment 
 - T: the commitment to randomness 
 - b[0],...,b[L]: the responses 
 
 A commitment selective-disclosure proof can be converted into an octet string as follows: 
 
-1. Turn C and T into octet sequences using the method defined in [@convert-commitment-into-octet-string]. 
+1. Turn PC and T into octet sequences using the method defined in [@convert-commitment-into-octet-string]. 
 
 2. Convert the number of responses (n) into a big-endian octet-sequence, with the array being 2 bytes long. 
 
 3. Convert all the responses into octet sequences using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
-4. Concatenate the octet sequences in order C, T, n, b[0],...,b[L]. 
+4. Concatenate the octet sequences in order PC, T, n, b[0],...,b[L]. 
 
 5. The resulting octet sequence is the representation of the proof. 
 
 ### Convert Octet String into Commitment Selective-Disclosure Proof
 
-1. Split the octet-sequence into the following sequences: T (64 bytes), n (2 bytes), [b[0],...b[L]] \(32 * n bytes\). 
+1. Split the octet-sequence into the following sequences: PC (64 bytes),T (64 bytes), n (2 bytes), [b[0],...b[L]] \(32 * n bytes\). 
 
 2. Convert T into a commitment using the steps defined in [@convert-octet-string-into-commitment]. 
 
@@ -560,7 +585,7 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 3. Convert the b[0],...,b[L] octet-sequences into field elements using Octet-String-to-Field-Element in Section 2.3.6 in [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
-4. The resulting tuple (C, T, [b[0],...,b[L]]) is the proof value. 
+4. The following tuple is the proof value: (PC, T, [b[0],...,b[L]]) . 
 
 ### Signing
 
@@ -613,16 +638,11 @@ A commitment selective-disclosure proof can be converted into an octet string as
 #### Verify Proof
 
 1. The proof value MUST be an octet sequence of at least 194 bytes. If the octet sequence is less than 194 bytes, the validation has failed. 
-
 2. Split the octet sequence into 1 octet for the identifier (I), 64-octet sequence for the signature (S), and the rest of the sequence for the commitment proof (V). 
-
 3. The identifier (I) MUST be equal to 2. If it is not equal to 2, the validation has failed. 
-
 4. Decode the octet-sequence representation of the commitment proof (V) as defined in [@convert-octet-string-into-commitment-selective-disclosure-proof]. 
-
-5. Verify the octet sequence representation of the commitment (C) against the signature (S) using the selected ECDSA JWA algorithm. 
-
-6. Verify the commitment proof (V) as defined in [@verify-commitment-selective-disclosure-proof]. 
+5. Verify the commitment proof (V) as defined in [@verify-commitment-selective-disclosure-proof]. 
+6. Verify the octet sequence representation of the commitment (C) produced in step 5 against the signature (S) using the selected ECDSA JWA algorithm. 
 
 ### Algorithm Parameters
 
