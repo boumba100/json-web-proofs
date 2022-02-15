@@ -416,7 +416,7 @@ G[3] = hash_to_curve(G[2])
 
 ### Convert Message to Scalar
 
-The following describes how to convert a message value to a scalar: 
+The following steps describe how to convert a message into a scalar: 
 
 - Number: Number mod n 
 - Boolean: if true: 1, else: 0 
@@ -438,9 +438,9 @@ Inputs:
 
   
 
-1. If generators  (G[0],...,G[L]) have not been provided, derive a set for the total number of messages + 1 (n) as defined in [@derive-generators]. 
+1. If generators  (G[0],...,G[L]) have not been provided, derive a set for the total number of messages + 1 (n) by following the steps defined in [@derive-generators]. 
 
-2. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar]. 
+2. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars (s[0],...,s[L]) by following the steps defined in [@convert-message-to-scalar]. 
 
 3. If a blinding factor (h) is not provided, select a random one from [1, n-1]. 
 
@@ -465,12 +465,11 @@ Inputs:
 - h: blinding factor from [1, n -1] 
 - C: the commitment 
 - nonce: nonce octet sequence 
-  
 
-1. Derive a set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators].
+1. Derive a set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) by following the steps defined in [@derive-generators].
 2. Omit the generators from the set (G[0],...,G[L]) that don't have a corresponding hidden message (msg[i]) or blinding factor (at the last index).
 3. Create the proof commitment (PC) from the generators (G[0],...,G[l]), the messages (msg[0],...msg[L]) and the blinding factor (h) by following the steps defined in [@create-commitment].
-4. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars  (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
+4. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars  (s[0],...,s[L]) by following the steps defined in [@convert-message-to-scalar].
 5. Append the blinding factor (h) to the list of scalars (s[i],...,s[L]).
 6. Select a random number[r[i]] from [1, n -1] for each scalar [s[i]].
 7. For each scalar (r[i]), multiply its corresponding generator (generated in step 1) by its corresponding random number [r[i]]. R[i] = G[i] x r[i]
@@ -493,9 +492,9 @@ Inputs:
 
 
 
-1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators].
-2. Convert the list of messages (msg[0],...,msg[L]) to a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
-3. Generate the challenge (c) as defined in step 7 of [@create-commitment-selective-disclosure-proof].
+1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) by following the steps defined in [@derive-generators].
+2. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars (s[0],...,s[L]) by following the steps defined in [@convert-message-to-scalar].
+3. Generate the challenge (c) by following step 7 of [@create-commitment-selective-disclosure-proof].
 4. Multiply each response [b[i]] by its corresponding generator (G[i]). P[i] =  G[i] x b[i].
 5. To verify, check T = sum(P[0],...P[L]) + PC x [c].
 6. Multiply each revealed scalar (s[i]) by its corresponding generator (G[i]). O[i] = G[i] x [s[i]].
@@ -519,9 +518,9 @@ Inputs:
 
   
 
-1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) as defined in [@derive-generators].
+1. Derive the set of generators (G[0],...,G[L]) for the total number of messages + 1 (n) by following the steps defined in [@derive-generators].
 
-2. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars (s[0],...,s[L]) as defined in [@convert-message-to-scalar].
+2. Convert the list of messages (msg[0],...,msg[L]) into a list of scalars (s[0],...,s[L]) by following the steps defined in [@convert-message-to-scalar].
 
 3. Append the blinding factor (h) to the list of scalars (s[0],...,s[L]). 
 
@@ -537,23 +536,19 @@ Since an elliptic-curve based commitment is simply a point on an elliptic curve,
 
 A commitment can be converted into an octet string representation as follows: 
 
-1. Turn X and Y into octet sequences using the Integer-to-OctetString Conversion defined in Section 2.3.7 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1) (in big-endian octet order), with each array being of 32 bytes long. 
+1. Turn the elliptic-curve point into a 32-octet sequence using the Elliptic-Curve-Point-to-Octet-String Conversion defined in Section 2.3.2 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1) (compressed and in big-endian octet order). 
 
-2. Concatenate the two octet sequences in the order X and then Y. 
-
-3. The resulting octet sequence is the representation of the elliptic-curve based commitment. 
+3. The resulting 32-octet sequence is the encoded elliptic-curve based commitment. 
 
 ### Convert Octet String into Commitment
 
 An octet string can be converted into an elliptic-curve based commitment as follows. 
 
-1. The octet string representation of the commitment MUST be a 64-octet sequence. If it is not a 64-octet sequence, the validation has failed. 
+1. The octet string representation of the commitment MUST be a 32-octet sequence. If it is not a 32-octet sequence, the validation has failed. 
 
-2. Split the 64-octet sequence into two 32-octet sequences. The first sequence represents X and the second Y. 
+3. Convert the octet sequence into an elliptic-curve point using the Octet-String-to-Elliptic-Curve-Point Conversion defined in Section 2.3.4 [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1) (compressed and in big-endian octet order).
 
-3. Convert the two octet sequences into integers using the Octet-String-to-Integer Conversion defined in Section 2.3.8 [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1)
-
-4. The following tuple is the commitment value: (X, Y). 
+4. The resulting elliptic-curve point is the commitment.
 
 ### Convert Commitment Selective-Disclosure Proof into Octet String
 
@@ -565,11 +560,11 @@ Inputs:
 
 A commitment selective-disclosure proof can be converted into an octet string as follows: 
 
-1. Turn PC and T into octet sequences using the method defined in [@convert-commitment-into-octet-string]. 
+1. Turn PC and T into 32-octet sequences by following the steps defined in [@convert-commitment-into-octet-string]. 
 
-2. Convert the number of responses (n) into a big-endian octet-sequence, with the array being 2 bytes long. 
+2. Convert the number of responses (n) into a 2-octet sequence in big-endian order. 
 
-3. Convert all the responses into octet sequences using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
+3. Convert all the responses into a set of 32-octet sequences using the Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
 4. Concatenate the octet sequences in order PC, T, n, b[0],...,b[L]. 
 
@@ -577,47 +572,47 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 ### Convert Octet String into Commitment Selective-Disclosure Proof
 
-1. Split the octet-sequence into the following sequences: PC (64 bytes),T (64 bytes), n (2 bytes), [b[0],...b[L]] \(32 * n bytes\). 
+1. Split the octet-sequence into the following sequences: PC (32 bytes),T (32 bytes), n (2 bytes), [b[0],...b[L]] \(32 * n bytes\). 
 
-2. Convert T into a commitment using the steps defined in [@convert-octet-string-into-commitment]. 
+2. Convert T into a commitment by following the steps defined in [@convert-octet-string-into-commitment]. 
 
-4. Split the [b[0],...,b[L]] octet-sequence into n number of octet-sequences of 32 bytes long. 
+4. Split the responses ([b[0],...,b[L]]) octet-sequence into n amount of 32-octet sequences. 
 
-3. Convert the b[0],...,b[L] octet-sequences into field elements using Octet-String-to-Field-Element in Section 2.3.6 in [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
+3. Convert each response (b[i]] 32-octet sequence into a field element using the Octet-String-to-Field-Element Conversion defined in Section 2.3.6 in [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
 4. The following tuple is the proof value: (PC, T, [b[0],...,b[L]]) . 
 
 ### Signing
 
-1. Create a vector commitment (C) for the list of messages (msg[0],...,msg[L]) as defined in [@create-commitment]. 
+1. Create a vector commitment (C) on the list of messages (msg[0],...,msg[L]) by following the steps defined in [@create-commitment]. 
 
-2. Turn the commitment (C) value into an octet sequence as defined in [@convert-commitment-into-octet-string]. 
+2. Turn the commitment (C) value into an 32-octet sequence by following the steps defined in [@convert-commitment-into-octet-string]. 
 
-3. Generate a signature (S) on the octet sequence using the selected ECDSA JWA algorithm. 
+3. Generate a signature (S) on the 32-octet sequence using the selected ECDSA JWA algorithm. 
 
-4. Turn the blinding factor (h) generated in step 1 into an octet sequence in big-endian order using Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
+4. Turn the blinding factor (h) generated in step 1 into an 32-octet sequence in big-endian order using the Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
 5. Set the proof type identifier byte (I) to 1. 
 
 6. Concatenate the three octet sequences in the order I, S and then h. Note: C can be reconstructed if all the messages are known. 
 
-7. The resulting 97-octet sequence is the proof value. 
+7. The resulting 65-octet sequence is the proof value. 
 
 ### Proving
 
-1. The input proof value MUST be a 97-octet sequence. If it is not a 97-octet sequence, the validation has failed. 
+1. The input proof value MUST be a 65-octet sequence. If it is not a 65-octet sequence, the validation has failed. 
 
-2. Split the 97-octet sequence into the following octet-sequences: 1-octet for the identifier (I), 64-octet sequence for the signature value (S), and 32-octet sequence for the blinding (h).  
+2. Split the 65-octet sequence into the following octet-sequences: 1-octet for the identifier (I), 32-octet sequence for the signature value (S), and 32-octet sequence for the blinding (h).  
 
 3. The identifier (I) value MUST be equal to 1. If the value is not equal to 1, the validation has failed. 
 
-4. Convert the blinding factor (h) octet-sequence into an integer as defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
+4. Convert the blinding factor (h) 32-octet sequence into an integer using the Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
-5. Reconstruct the commitment (C) using the full list of messages (msg[0],...,msg[L]) and the blinding factor (h). 
+5. Reconstruct the commitment (C) on the full list of messages (msg[0],...,msg[L]) and the blinding factor (h) by following the steps defined in [@create-commitment]. 
 
-6. Generate a commitment proof (V) as defined in [@create-commitment-selective-disclosure-proof]. 
+6. Generate a commitment proof (V) by following the steps defined in [@create-commitment-selective-disclosure-proof]. 
 
-7. Convert the commitment proof (V) into an octet sequence as defined in [@convert-commitment-selective-disclosure-proof-into-octet-string]. 
+7. Convert the commitment proof (V) into an octet sequence by following the steps defined in [@convert-commitment-selective-disclosure-proof-into-octet-string]. 
 
 8. Set the proof type identifier byte (I) to 2. 
 
@@ -629,20 +624,20 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 #### Verify Root
 
-1. Extract the signature value (S) and reconstruct the commitment value (C) by executing steps 1 through 5 defined in [@proving]. 
+1. Extract the signature value (S) and reconstruct the commitment value (C) by following steps 1 through 5 defined in [@proving]. 
 
-2. Turn the commitment (C) value into an octet sequence as defined in [@convert-commitment-into-octet-string]. 
+2. Turn the commitment (C) value into an 32-octet sequence by following the steps defined in [@convert-commitment-into-octet-string]. 
 
-3. Verify the signature (S) against the octet sequence representation of the commitment value (C) using the selected ECDSA JWA algorithm. 
+3. Verify the signature (S) against the 32-octet sequence representation of the commitment value (C) using the selected ECDSA JWA algorithm. 
 
 #### Verify Proof
 
-1. The proof value MUST be an octet sequence of at least 194 bytes. If the octet sequence is less than 194 bytes, the validation has failed. 
+1. The proof value MUST be an octet sequence of at least 130 bytes. If the octet sequence is less than 130 bytes, the validation has failed. 
 2. Split the octet sequence into 1 octet for the identifier (I), 64-octet sequence for the signature (S), and the rest of the sequence for the commitment proof (V). 
 3. The identifier (I) MUST be equal to 2. If it is not equal to 2, the validation has failed. 
-4. Decode the octet-sequence representation of the commitment proof (V) as defined in [@convert-octet-string-into-commitment-selective-disclosure-proof]. 
-5. Verify the commitment proof (V) as defined in [@verify-commitment-selective-disclosure-proof]. 
-6. Verify the octet sequence representation of the commitment (C) produced in step 5 against the signature (S) using the selected ECDSA JWA algorithm. 
+4. Decode the octet-sequence representation of the commitment proof (V) by following the steps defined in [@convert-octet-string-into-commitment-selective-disclosure-proof]. 
+5. Verify the commitment proof (V) by following the steps defined in [@verify-commitment-selective-disclosure-proof]. 
+6. Verify the 32-octet sequence representation of the commitment (C) (constructed in step 5) against the signature (S) using the selected ECDSA JWA algorithm. 
 
 ### Algorithm Parameters
 
