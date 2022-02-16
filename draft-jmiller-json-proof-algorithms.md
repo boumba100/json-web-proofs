@@ -536,15 +536,15 @@ Since an elliptic-curve based commitment is simply a point on an elliptic curve,
 
 A commitment can be converted into an octet string representation as follows: 
 
-1. Turn the elliptic-curve point into a 32-octet sequence using the Elliptic-Curve-Point-to-Octet-String Conversion defined in Section 2.3.2 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1) (compressed and in big-endian octet order). 
+1. Turn the elliptic-curve point into a 33-octet sequence using the Elliptic-Curve-Point-to-Octet-String Conversion defined in Section 2.3.2 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1) (compressed and in big-endian octet order). 
 
-3. The resulting 32-octet sequence is the encoded elliptic-curve based commitment. 
+3. The resulting 33-octet sequence is the encoded elliptic-curve based commitment. 
 
 ### Convert Octet String into Commitment
 
 An octet string can be converted into an elliptic-curve based commitment as follows. 
 
-1. The octet string representation of the commitment MUST be a 32-octet sequence. If it is not a 32-octet sequence, the validation has failed. 
+1. The octet string representation of the commitment MUST be a 33-octet sequence. If it is not a 33-octet sequence, the validation has failed. 
 
 3. Convert the octet sequence into an elliptic-curve point using the Octet-String-to-Elliptic-Curve-Point Conversion defined in Section 2.3.4 [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1) (compressed and in big-endian octet order).
 
@@ -560,11 +560,11 @@ Inputs:
 
 A commitment selective-disclosure proof can be converted into an octet string as follows: 
 
-1. Turn PC and T into 32-octet sequences by following the steps defined in [@convert-commitment-into-octet-string]. 
+1. Turn PC and T into 33-octet sequences by following the steps defined in [@convert-commitment-into-octet-string]. 
 
 2. Convert the number of responses (n) into a 2-octet sequence in big-endian order. 
 
-3. Convert all the responses into a set of 32-octet sequences using the Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
+3. Convert all the responses into a set of 33-octet sequences using the Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
 4. Concatenate the octet sequences in order PC, T, n, b[0],...,b[L]. 
 
@@ -572,7 +572,7 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 ### Convert Octet String into Commitment Selective-Disclosure Proof
 
-1. Split the octet-sequence into the following sequences: PC (32 bytes),T (32 bytes), n (2 bytes), [b[0],...b[L]] \(32 * n bytes\). 
+1. Split the octet-sequence into the following sequences: PC (33 bytes),T (33 bytes), n (2 bytes), [b[0],...b[L]] \(32 * n bytes\). 
 
 2. Convert T into a commitment by following the steps defined in [@convert-octet-string-into-commitment]. 
 
@@ -586,9 +586,9 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 1. Create a vector commitment (C) on the list of messages (msg[0],...,msg[L]) by following the steps defined in [@create-commitment]. 
 
-2. Turn the commitment (C) value into an 32-octet sequence by following the steps defined in [@convert-commitment-into-octet-string]. 
+2. Turn the commitment (C) value into an 33-octet sequence by following the steps defined in [@convert-commitment-into-octet-string]. 
 
-3. Generate a signature (S) on the 32-octet sequence using the selected ECDSA JWA algorithm. 
+3. Generate a signature (S) on the 33-octet sequence using the selected ECDSA JWA algorithm. 
 
 4. Turn the blinding factor (h) generated in step 1 into an 32-octet sequence in big-endian order using the Field-Element-to-Octet-String Conversion defined in Section 2.3.5 of [SEC1] (https://datatracker.ietf.org/doc/html/rfc7518#ref-SEC1). 
 
@@ -596,13 +596,13 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 6. Concatenate the three octet sequences in the order I, S and then h. Note: C can be reconstructed if all the messages are known. 
 
-7. The resulting 65-octet sequence is the proof value. 
+7. The resulting 97-octet sequence is the proof value. 
 
 ### Proving
 
-1. The input proof value MUST be a 65-octet sequence. If it is not a 65-octet sequence, the validation has failed. 
+1. The input proof value MUST be a 97-octet sequence. If it is not a 97-octet sequence, the validation has failed. 
 
-2. Split the 65-octet sequence into the following octet-sequences: 1-octet for the identifier (I), 32-octet sequence for the signature value (S), and 32-octet sequence for the blinding (h).  
+2. Split the 97-octet sequence into the following octet-sequences: 1-octet for the identifier (I), 64-octet sequence for the signature value (S), and 32-octet sequence for the blinding (h).  
 
 3. The identifier (I) value MUST be equal to 1. If the value is not equal to 1, the validation has failed. 
 
@@ -626,18 +626,18 @@ A commitment selective-disclosure proof can be converted into an octet string as
 
 1. Extract the signature value (S) and reconstruct the commitment value (C) by following steps 1 through 5 defined in [@proving]. 
 
-2. Turn the commitment (C) value into an 32-octet sequence by following the steps defined in [@convert-commitment-into-octet-string]. 
+2. Turn the commitment (C) value into an 33-octet sequence by following the steps defined in [@convert-commitment-into-octet-string]. 
 
-3. Verify the signature (S) against the 32-octet sequence representation of the commitment value (C) using the selected ECDSA JWA algorithm. 
+3. Verify the signature (S) against the 33-octet sequence representation of the commitment value (C) using the selected ECDSA JWA algorithm. 
 
 #### Verify Proof
 
-1. The proof value MUST be an octet sequence of at least 130 bytes. If the octet sequence is less than 130 bytes, the validation has failed. 
+1. The proof value MUST be an octet sequence of at least 131 bytes. If the octet sequence is less than 131 bytes, the validation has failed. 
 2. Split the octet sequence into 1 octet for the identifier (I), 64-octet sequence for the signature (S), and the rest of the sequence for the commitment proof (V). 
 3. The identifier (I) MUST be equal to 2. If it is not equal to 2, the validation has failed. 
 4. Decode the octet-sequence representation of the commitment proof (V) by following the steps defined in [@convert-octet-string-into-commitment-selective-disclosure-proof]. 
 5. Verify the commitment proof (V) by following the steps defined in [@verify-commitment-selective-disclosure-proof]. 
-6. Verify the 32-octet sequence representation of the commitment (C) (constructed in step 5) against the signature (S) using the selected ECDSA JWA algorithm. 
+6. Verify the 33-octet sequence representation of the commitment (C) (constructed in step 5) against the signature (S) using the selected ECDSA JWA algorithm. 
 
 ### Algorithm Parameters
 
