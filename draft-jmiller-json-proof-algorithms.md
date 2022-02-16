@@ -475,7 +475,7 @@ Inputs:
 7. For each scalar (r[i]), multiply its corresponding generator (generated in step 1) by its corresponding random number [r[i]]. R[i] = G[i] x r[i]
 8. Calculate the final commitment to randomness (T) by adding all the  points (R[0],...,R[L]) that were generated in step 3 together. T =  sum(R[0],...,R[L]).
 9. Generate the challenge (c) by hashing the concatenation of the generators (G[0],...,G[L]), the randomness commitment (T), the proof commitment (PC),  and the nonce . C = H(G[0],...,G[L] || T || PC || nonce).
-10. For each hidden scalar (s[i]), generate the response (b[i]) by computing b[i] = r[i] - c * s[i].
+10. For each hidden scalar (s[i]), generate the response (b[i]) by computing b[i] = r[i] - c * s[i] mod n.
 11. The following tuple is the proof value: (PC, T, [b[0],...,b[L]).
 
 ### Verify Commitment Selective-Disclosure Proof
